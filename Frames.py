@@ -1,6 +1,6 @@
 import sys
 import pygame
-from Widgets import Button, ButtonDesignParams, Slider
+from Widgets import Button, ButtonDesignParams, Label, Slider, SliderWithValue
 
 
 class Frame:
@@ -42,11 +42,12 @@ class MenuFrame(Frame):
         super().post_init(app)
 
         self.buttons_group = pygame.sprite.Group()
+
         Button((275, 10 + 300), (250, 70), "Начать игру", ButtonDesignParams(), None, self.buttons_group)
         Button((275, 90 + 300), (250, 70), "Настройки", ButtonDesignParams(), self.goto_settings, self.buttons_group)
         Button((275, 170 + 300), (250, 70), "Выход", ButtonDesignParams(), self.exit, self.buttons_group)
 
-        Slider((0, 0), (255, 70), 1, self.buttons_group)
+        Label((70, 100), "Съешь ещё больше этих сладких французских булок.", self.buttons_group)
 
         self.append_many_widgets((
             self.buttons_group,
@@ -63,7 +64,12 @@ class SettingsFrame(Frame):
         super().post_init(app)
 
         self.buttons_group = pygame.sprite.Group()
-        Button((275, 10 + 300), (250, 70), "Вы в настройках", ButtonDesignParams(), self.goto_menu, self.buttons_group)
+
+        Label((250, 20), "Громкость:", self.buttons_group)
+        SliderWithValue((250, 20 + 50), (255, 70), 0, self.buttons_group)
+
+        Button((250, 20 + 150), (300, 70), "Сохранить изменения", ButtonDesignParams(), None, self.buttons_group)
+        Button((575, 525), (200, 50), "Вернуться", ButtonDesignParams(), self.goto_menu, self.buttons_group)
 
         self.append_many_widgets((
             self.buttons_group,
