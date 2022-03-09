@@ -1,5 +1,7 @@
 import pygame
 
+default_pic = 'дед2.png'
+
 
 class ButtonDesignParams:
     def __init__(self):
@@ -8,6 +10,9 @@ class ButtonDesignParams:
 
         self.background_color_selected = (255, 255, 255)
         self.foreground_color_selected = (0, 0, 0)
+
+
+
 
 
 class Button(pygame.sprite.Sprite):
@@ -27,9 +32,12 @@ class Button(pygame.sprite.Sprite):
         self.rect = pygame.rect.Rect(pos, size)
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
 
+        self.background_pic_surf = pygame.image.load(default_pic)
+
     def draw(self):
         background = (self.design.background_color_default 
             if not self.focused else self.design.background_color_selected)
+
         foreground = (self.design.foreground_color_default 
             if not self.focused else self.design.foreground_color_selected)
 
@@ -39,11 +47,16 @@ class Button(pygame.sprite.Sprite):
         text_width = rendered_text.get_width()
         text_heigh = rendered_text.get_height()
 
+        if self.focused:
+            self.image.blit(self.background_pic_surf, (0, 0))
+            #print(self.x, self.y)
+
         self.image.blit(rendered_text, (
                 (self.h - text_width) // 2,
                 (self.w - text_heigh) // 2
             )
         )
+
     
     def update(self, *events):
         mouse_pos = pygame.mouse.get_pos()
