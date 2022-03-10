@@ -5,7 +5,9 @@ from Widgets import Button, ButtonDesignParams, Label, Slider, SliderWithValue
 
 pygame.init()
 
-default_pic = pygame.image.load('дед2.png')
+default_pic = pygame.image.load('сварог.png')
+spec_pic1 = pygame.image.load('сварогсхризм.png')
+spec_pic2 = pygame.image.load('сварогврн.png')
 default_snd = pygame.mixer.Sound('сварог.wav')
 
 
@@ -74,8 +76,8 @@ class SettingsFrame(Frame):
         Label((250, 20), "Громкость:", self.buttons_group)
         SliderWithValue((250, 20 + 50), (255, 70), 0, self.buttons_group)
 
-        Button((250, 20 + 150), (300, 70), "Сохранить изменения", ButtonDesignParams(default_pic,default_snd), None, self.buttons_group)
-        Button((575, 525), (200, 50), "Вернуться", ButtonDesignParams(default_pic,default_snd), self.goto_menu, self.buttons_group)
+        Button((250, 20 + 150), (300, 70), "Сохранить изменения", ButtonDesignParams(spec_pic1,default_snd), None, self.buttons_group)
+        Button((575, 525), (200, 50), "Вернуться", ButtonDesignParams(spec_pic2,default_snd), self.goto_menu, self.buttons_group)
 
         self.append_many_widgets((
             self.buttons_group,
