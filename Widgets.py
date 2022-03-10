@@ -4,7 +4,7 @@ import pygame
 
 
 class ButtonDesignParams:
-    def __init__(self, pic):
+    def __init__(self, pic=None, sound=None):
         self.background_color_default = (0, 0, 0)
         self.foreground_color_default = (255, 255, 255)
 
@@ -12,14 +12,15 @@ class ButtonDesignParams:
         self.foreground_color_selected = (0, 0, 0)
 
         self.background_pic_surf = pic
+        self.button_sound = sound
 
 
 
 
 
 class Button(pygame.sprite.Sprite, ButtonDesignParams):
-    def __init__(self, pos=(0, 0), size=(10, 10), 
-            text="", design: ButtonDesignParams=ButtonDesignParams(None), onClick=None, *groups):
+    def __init__(self, pos=(0, 0), size=(10, 10),
+            text="", design: ButtonDesignParams=ButtonDesignParams(), onClick=None, *groups):
         super().__init__(*groups)
         self.x, self.y = pos
         self.h, self.w = size
@@ -27,6 +28,7 @@ class Button(pygame.sprite.Sprite, ButtonDesignParams):
 
         self.onClick = onClick
         self.focused = False
+        self.selected = False
 
         self.font = pygame.font.Font(None, 36)
 
@@ -51,6 +53,8 @@ class Button(pygame.sprite.Sprite, ButtonDesignParams):
 
         if self.focused:
             self.image.blit(self.design.background_pic_surf, (0, 0))
+            if self.selected:
+                self.design.button_sound.play()
 
         self.image.blit(rendered_text, (
                 (self.h - text_width) // 2,
@@ -71,6 +75,7 @@ class Button(pygame.sprite.Sprite, ButtonDesignParams):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.focused and self.onClick is not None:
                     self.onClick()
+                    self.selected = True
 
         self.draw()
 

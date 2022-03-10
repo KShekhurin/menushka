@@ -2,7 +2,11 @@ import sys
 import pygame
 from Widgets import Button, ButtonDesignParams, Label, Slider, SliderWithValue
 
+
+pygame.init()
+
 default_pic = pygame.image.load('дед2.png')
+default_snd = pygame.mixer.Sound('сварог.wav')
 
 
 class Frame:
@@ -45,8 +49,8 @@ class MenuFrame(Frame):
 
         self.buttons_group = pygame.sprite.Group()
 
-        Button((275, 10 + 300), (250, 70), "Начать игру", ButtonDesignParams(default_pic), None, self.buttons_group)
-        Button((275, 90 + 300), (250, 70), "Настройки", ButtonDesignParams(default_pic), self.goto_settings, self.buttons_group)
+        Button((275, 10 + 300), (250, 70), "Начать игру", ButtonDesignParams(default_pic,default_snd), None, self.buttons_group)
+        Button((275, 90 + 300), (250, 70), "Настройки", ButtonDesignParams(default_pic,default_snd), self.goto_settings, self.buttons_group)
         Button((275, 170 + 300), (250, 70), "Выход", ButtonDesignParams(default_pic), self.exit, self.buttons_group)
 
         Label((70, 100), "Съешь ещё больше этих сладких французских булок.", self.buttons_group)
@@ -70,8 +74,8 @@ class SettingsFrame(Frame):
         Label((250, 20), "Громкость:", self.buttons_group)
         SliderWithValue((250, 20 + 50), (255, 70), 0, self.buttons_group)
 
-        Button((250, 20 + 150), (300, 70), "Сохранить изменения", ButtonDesignParams(default_pic), None, self.buttons_group)
-        Button((575, 525), (200, 50), "Вернуться", ButtonDesignParams(default_pic), self.goto_menu, self.buttons_group)
+        Button((250, 20 + 150), (300, 70), "Сохранить изменения", ButtonDesignParams(default_pic,default_snd), None, self.buttons_group)
+        Button((575, 525), (200, 50), "Вернуться", ButtonDesignParams(default_pic,default_snd), self.goto_menu, self.buttons_group)
 
         self.append_many_widgets((
             self.buttons_group,
