@@ -61,7 +61,6 @@ class SettingsFrame(Frame):
         self.app.reload_frame(MenuFrame())
 
     def change_localization(self, lang):
-        print(lang)
         if (lang == "русский"):
             Config.current_local = Config.local_rus
         elif (lang == "китайский"):

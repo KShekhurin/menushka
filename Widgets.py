@@ -299,8 +299,6 @@ class Selector(pygame.sprite.Sprite):
                         self.currentOption = opt.getText()
                         opt.setText(tmp)
                         self.on_selected_change(self.currentOption)
-
-                        print(Config.current_local)
             elif event.type == pygame.MOUSEBUTTONDOWN and self.focused and not self.selected:
                 self.selected = True
 
