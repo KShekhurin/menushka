@@ -1,7 +1,15 @@
 import sys
 import pygame
-from Widgets import Button, ButtonDesignParams, Label, Slider, SliderWithValue, Selector
+from Widgets import Button, ButtonDesignParams, Label, Slider, SliderWithValue, Selector, SelectorDesignParams
 import Config
+
+
+pygame.init()
+
+default_pic = pygame.image.load('pics/сварог.png')
+spec_pic1 = pygame.image.load('pics/сварогсхризм.png')
+spec_pic2 = pygame.image.load('pics/сварогврн.png')
+default_snd = pygame.mixer.Sound('music/сварог.wav')
 
 class Frame:
     def __init__(self):
@@ -43,9 +51,9 @@ class MenuFrame(Frame):
 
         self.buttons_group = pygame.sprite.Group()
 
-        Button((275, 10 + 300), (250, 70), "новая_игра", ButtonDesignParams(), None, self.buttons_group)
-        Button((275, 90 + 300), (250, 70), "настройки", ButtonDesignParams(), self.goto_settings, self.buttons_group)
-        Button((275, 170 + 300), (250, 70), "выйти", ButtonDesignParams(), self.exit, self.buttons_group)
+        Button((275, 10 + 300), (250, 70), "новая_игра", ButtonDesignParams(default_pic, default_snd), None, self.buttons_group)
+        Button((275, 90 + 300), (250, 70), "настройки", ButtonDesignParams(default_pic, default_snd), self.goto_settings, self.buttons_group)
+        Button((275, 170 + 300), (250, 70), "выйти", ButtonDesignParams(default_pic, default_snd), self.exit, self.buttons_group)
 
         Label((70, 100), "рыба", True, self.buttons_group)
 
@@ -76,10 +84,10 @@ class SettingsFrame(Frame):
         Label((250, 20), "громкость", True, self.buttons_group)
         SliderWithValue((250, 20 + 50), (255, 70), 0, self.buttons_group)
 
-        Button((250, 20 + 150), (300, 70), "сохранить_изменения", ButtonDesignParams(), None, self.buttons_group)
-        Button((575, 525), (200, 50), "вернуться", ButtonDesignParams(), self.goto_menu, self.buttons_group)
+        Button((250, 20 + 150), (300, 70), "сохранить_изменения", ButtonDesignParams(spec_pic1, default_snd), None, self.buttons_group)
+        Button((575, 525), (200, 50), "вернуться", ButtonDesignParams(spec_pic2, default_snd), self.goto_menu, self.buttons_group)
 
-        Selector((0, 0), (200, 50), ("русский", "китайский", "латинский"), self.change_localization, self.buttons_group)
+        Selector((0, 0), (200, 50), ("русский", "китайский", "латинский"), SelectorDesignParams(spec_pic2, default_snd),self.change_localization, self.buttons_group)
 
         self.append_many_widgets((
             self.buttons_group,
