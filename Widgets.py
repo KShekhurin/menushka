@@ -1,13 +1,17 @@
 import pygame
 import Config
 
+
 class ButtonDesignParams:
-    def __init__(self):
+    def __init__(self, pic=None, sound=None):
         self.background_color_default = (0, 0, 0)
         self.foreground_color_default = (255, 255, 255)
 
         self.background_color_selected = (255, 255, 255)
         self.foreground_color_selected = (0, 0, 0)
+
+        self.background_pic_surf = pic
+        self.button_sound = sound
 
 
 class Button(pygame.sprite.Sprite):
@@ -20,6 +24,7 @@ class Button(pygame.sprite.Sprite):
 
         self.onClick = onClick
         self.focused = False
+        self.selected = False
 
         self.font = pygame.font.Font("Cyberbit.ttf", 26)
 
@@ -39,6 +44,11 @@ class Button(pygame.sprite.Sprite):
         text_width = rendered_text.get_width()
         text_heigh = rendered_text.get_height()
 
+        if self.focused:
+            self.image.blit(self.design.background_pic_surf, (0, 0))
+            if self.selected:
+                self.design.button_sound.play()
+
         self.image.blit(rendered_text, (
                 (self.h - text_width) // 2,
                 (self.w - text_heigh) // 2
@@ -57,6 +67,7 @@ class Button(pygame.sprite.Sprite):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.focused and self.onClick is not None:
                     self.onClick()
+                    self.selected = True
 
         self.draw()
 
@@ -191,9 +202,16 @@ class SliderWithValue(pygame.sprite.Sprite):
         
         self.draw()
 
+
+class SelectorDesignParams:
+    def __init__(self, pic=None, sound=None):
+        self.background_pic = pic
+        self.sound = sound
+
+
 class SelectorOption(pygame.sprite.Sprite):
-    def __init__(self, pos, size, text, *groupы):
-        super().__init__(*groupы)
+    def __init__(self, pos, size, text, *groups):
+        super().__init__(*groups)
 
         self.x, self.y = pos
         self.w, self.h = size
@@ -234,8 +252,10 @@ class SelectorOption(pygame.sprite.Sprite):
     def setText(self, text):
         self.text = text
 
+
 class Selector(pygame.sprite.Sprite):
-    def __init__(self, pos=(0,0), size=(40,10), options=(), on_selected_change=None, *groups):
+    def __init__(self, pos=(0,0), size=(40,10), options=(), design: SelectorDesignParams=SelectorDesignParams(),
+                 on_selected_change=None, *groups):
         super().__init__(*groups)
 
         self.x, self.y = pos
@@ -256,6 +276,8 @@ class Selector(pygame.sprite.Sprite):
         self.rect = pygame.rect.Rect(pos, size)
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
 
+        self.design = design
+
     def draw(self):
         if self.selected:
             self.rect = pygame.rect.Rect((self.x, self.y), (self.w, self.h * (len(self.options) + 1)))
@@ -265,6 +287,9 @@ class Selector(pygame.sprite.Sprite):
             self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
 
         self.image.fill((0, 0, 0))
+
+        if self.focused or self.selected:
+            self.image.blit(self.design.background_pic, (0, 0))
 
         rendered_text = self.font.render(Config.current_local[self.currentOption], True, (255, 255, 255))
         self.image.blit(rendered_text, (self.w/2 - rendered_text.get_width()/2 - 10, self.h/2 - rendered_text.get_height()/2))
@@ -278,7 +303,6 @@ class Selector(pygame.sprite.Sprite):
 
         if self.selected:
             self.inner_group.draw(self.image)
-
 
     def update(self, *events):
         self.inner_group.update(*events)
