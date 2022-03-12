@@ -167,10 +167,12 @@ class Slider(pygame.sprite.Sprite):
 
 
 class SliderWithValue(pygame.sprite.Sprite):
-    def __init__(self, pos, slider_size, level, *groups) -> None:
+    def __init__(self, pos, slider_size, level, on_value_changed, *groups) -> None:
         super().__init__(*groups)
 
         self.level = level
+
+        self.on_value_changed = on_value_changed
 
         self.inner_group = pygame.sprite.Group()
         self.slider = Slider((0, 0), pos, slider_size, level, self.level_changed, self.inner_group)
@@ -182,6 +184,7 @@ class SliderWithValue(pygame.sprite.Sprite):
     def level_changed(self, new_level):
         self.level = new_level
         self.label.text = self.get_percent()
+        self.on_value_changed(self.level)
 
     def get_percent(self):
         return str(f"{round(self.level * 100)}%")
@@ -322,7 +325,8 @@ class Selector(pygame.sprite.Sprite):
                         tmp = self.currentOption
                         self.currentOption = opt.getText()
                         opt.setText(tmp)
-                        self.on_selected_change(self.currentOption)
+                        options = [self.currentOption] + list(map(lambda x: x.getText(), self.options))
+                        self.on_selected_change(options)
             elif event.type == pygame.MOUSEBUTTONDOWN and self.focused and not self.selected:
                 self.selected = True
 

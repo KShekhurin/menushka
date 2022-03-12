@@ -2,7 +2,7 @@ import sys
 import pygame
 from Widgets import Button, ButtonDesignParams, Label, Slider, SliderWithValue, Selector, SelectorDesignParams
 import Config
-
+import Settings
 
 pygame.init()
 
@@ -46,6 +46,17 @@ class MenuFrame(Frame):
     def exit(self):
         sys.exit() # Да, это плохо. Я протяну колбеки, но потом.
 
+    def change_localization(self, options):
+        lang = options[0]
+        if (lang == "русский"):
+            Config.current_local = Config.local_rus
+        elif (lang == "китайский"):
+            Config.current_local = Config.local_chi
+        elif (lang == "латинский"):
+            Config.current_local = Config.local_lat
+
+        Settings.lang_options = options
+
     def post_init(self, app):
         super().post_init(app)
 
@@ -57,6 +68,8 @@ class MenuFrame(Frame):
 
         Label((70, 100), "рыба", True, self.buttons_group)
 
+        Selector((0, 0), (200, 50), Settings.lang_options, SelectorDesignParams(spec_pic2, default_snd),self.change_localization, self.buttons_group)
+
         self.append_many_widgets((
             self.buttons_group,
         ))
@@ -64,17 +77,18 @@ class MenuFrame(Frame):
 class SettingsFrame(Frame):
     def __init__(self):
         super().__init__()
+        self.volume = Settings.volume
     
     def goto_menu(self):
         self.app.reload_frame(MenuFrame())
 
-    def change_localization(self, lang):
-        if (lang == "русский"):
-            Config.current_local = Config.local_rus
-        elif (lang == "китайский"):
-            Config.current_local = Config.local_chi
-        elif (lang == "латинский"):
-            Config.current_local = Config.local_lat
+    def save_changes(self):
+        Settings.volume = self.volume
+        pygame.mixer.music.set_volume(self.volume)
+        default_snd.set_volume(self.volume)
+
+    def update_volume(self, new_volume):
+        self.volume = new_volume
 
     def post_init(self, app):
         super().post_init(app)
@@ -82,12 +96,10 @@ class SettingsFrame(Frame):
         self.buttons_group = pygame.sprite.Group()
 
         Label((250, 20), "громкость", True, self.buttons_group)
-        SliderWithValue((250, 20 + 50), (255, 70), 0, self.buttons_group)
+        SliderWithValue((250, 20 + 50), (255, 70), self.volume, self.update_volume, self.buttons_group)
 
-        Button((250, 20 + 150), (300, 70), "сохранить_изменения", ButtonDesignParams(spec_pic1, default_snd), None, self.buttons_group)
+        Button((250, 20 + 150), (300, 70), "сохранить_изменения", ButtonDesignParams(spec_pic1, default_snd), self.save_changes, self.buttons_group)
         Button((575, 525), (200, 50), "вернуться", ButtonDesignParams(spec_pic2, default_snd), self.goto_menu, self.buttons_group)
-
-        Selector((0, 0), (200, 50), ("русский", "китайский", "латинский"), SelectorDesignParams(spec_pic2, default_snd),self.change_localization, self.buttons_group)
 
         self.append_many_widgets((
             self.buttons_group,
