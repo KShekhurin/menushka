@@ -19,6 +19,8 @@ class Frame:
         self.updatable = []
         self.background = (255, 0, 0) if (Config.current_local == Config.local_chi) else (0, 0, 255)
 
+        self.no_action_timer = pygame.time.get_ticks()
+
     def post_init(self, app):
         self.app = app
 
@@ -51,6 +53,8 @@ class MenuFrame(Frame):
         sys.exit() # Да, это плохо. Я протяну колбеки, но потом.
 
     def change_localization(self, options):
+        self.no_action_timer = pygame.time.get_ticks()
+
         lang = options[0]
         if (lang == "русский"):
             Config.current_local = Config.local_rus
@@ -61,6 +65,8 @@ class MenuFrame(Frame):
         elif (lang == "латинский"):
             Config.current_local = Config.local_lat
             self.background = (0, 0, 255)
+
+        self.helper.change_background(self.background)
 
         Settings.lang_options = options
 
@@ -77,11 +83,19 @@ class MenuFrame(Frame):
 
         Selector((0, 0), (200, 50), Settings.lang_options, SelectorDesignParams(spec_pic2, default_snd),self.change_localization, self.buttons_group)
 
-        helper = Helper((0, Config.screen_height - 200), (200, 200), self.buttons_group)
+        self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.background, self.buttons_group)
 
         self.append_many_widgets((
             self.buttons_group,
         ))
+
+    def update(self, events):
+        super().update(events)
+
+        is_time_to_motiv = pygame.time.get_ticks() - self.no_action_timer >= Config.helper_motivational_phrase_freq
+        if is_time_to_motiv:
+            self.helper.say_motiv()
+            self.no_action_timer = pygame.time.get_ticks()
 
 class SettingsFrame(Frame):
     def __init__(self):
@@ -92,11 +106,15 @@ class SettingsFrame(Frame):
         self.app.reload_frame(MenuFrame())
 
     def save_changes(self):
+        self.no_action_timer = pygame.time.get_ticks()
+
         Settings.volume = self.volume
         pygame.mixer.music.set_volume(self.volume)
         default_snd.set_volume(self.volume)
 
     def update_volume(self, new_volume):
+        self.no_action_timer = pygame.time.get_ticks()
+
         self.volume = new_volume
 
     def post_init(self, app):
@@ -110,6 +128,16 @@ class SettingsFrame(Frame):
         Button((250, 20 + 150), (300, 70), "сохранить_изменения", ButtonDesignParams(spec_pic1, default_snd), self.save_changes, self.buttons_group)
         Button((575, 525), (200, 50), "вернуться", ButtonDesignParams(spec_pic2, default_snd), self.goto_menu, self.buttons_group)
 
+        self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.background, self.buttons_group)
+
         self.append_many_widgets((
             self.buttons_group,
         ))
+
+    def update(self, events):
+        super().update(events)
+
+        is_time_to_motiv = pygame.time.get_ticks() - self.no_action_timer >= Config.helper_motivational_phrase_freq
+        if is_time_to_motiv:
+            self.helper.say_motiv()
+            self.no_action_timer = pygame.time.get_ticks()
