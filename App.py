@@ -21,7 +21,7 @@ class App:
                 if event.type == pygame.QUIT:
                     run = False
 
-            self.screen.fill((0, 0, 255))
+            #self.screen.fill((0, 0, 255))
             self.loaded_frame.update(events)
             self.loaded_frame.draw(self.screen)
 

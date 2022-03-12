@@ -1,6 +1,8 @@
 import sys
 import pygame
-from Widgets import Button, ButtonDesignParams, Label, Slider, SliderWithValue, Selector, SelectorDesignParams
+from Widgets import (Button, ButtonDesignParams, Label, Slider,
+                    SliderWithValue, Selector, SelectorDesignParams)
+from Helper import Helper
 import Config
 import Settings
 
@@ -15,6 +17,7 @@ class Frame:
     def __init__(self):
         self.drawable = []
         self.updatable = []
+        self.background = (255, 0, 0) if (Config.current_local == Config.local_chi) else (0, 0, 255)
 
     def post_init(self, app):
         self.app = app
@@ -32,6 +35,7 @@ class Frame:
             updatable.update(events)
 
     def draw(self, screen):
+        screen.fill(self.background)
         for drawable in self.drawable:
             drawable.draw(screen)
 
@@ -50,10 +54,13 @@ class MenuFrame(Frame):
         lang = options[0]
         if (lang == "русский"):
             Config.current_local = Config.local_rus
+            self.background = (0, 0, 255)
         elif (lang == "китайский"):
             Config.current_local = Config.local_chi
+            self.background = (255, 0, 0)
         elif (lang == "латинский"):
             Config.current_local = Config.local_lat
+            self.background = (0, 0, 255)
 
         Settings.lang_options = options
 
@@ -66,9 +73,11 @@ class MenuFrame(Frame):
         Button((275, 90 + 300), (250, 70), "настройки", ButtonDesignParams(default_pic, default_snd), self.goto_settings, self.buttons_group)
         Button((275, 170 + 300), (250, 70), "выйти", ButtonDesignParams(default_pic, default_snd), self.exit, self.buttons_group)
 
-        Label((70, 100), "рыба", True, self.buttons_group)
+        Label(("center", 100), "рыба", True, self.buttons_group)
 
         Selector((0, 0), (200, 50), Settings.lang_options, SelectorDesignParams(spec_pic2, default_snd),self.change_localization, self.buttons_group)
+
+        helper = Helper((0, Config.screen_height - 200), (200, 200), self.buttons_group)
 
         self.append_many_widgets((
             self.buttons_group,

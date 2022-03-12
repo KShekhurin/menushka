@@ -41,3 +41,5 @@ local_lat = {
 }
 
 current_local = local_rus
+screen_width = 800
+screen_height = 600

@@ -1,10 +1,10 @@
 from App import App
 from Frames import MenuFrame
-
+import Config
 
 def main():
     frame = MenuFrame()
-    application = App(frame, (800, 600))
+    application = App(frame, (Config.screen_width, Config.screen_height))
     application.start()
 
 

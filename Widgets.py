@@ -82,14 +82,19 @@ class Label(pygame.sprite.Sprite):
         self.font = pygame.font.Font("Cyberbit.ttf", 26)
         self.isLocal = isLocal
 
-        self.rect = pygame.rect.Rect(pos, (0, 0))
+        self.x, self.y = pos
+
+        self.rect = pygame.rect.Rect((0, 0), (0, 0))
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
     
     def draw(self):
         rendered_text = self.font.render(Config.current_local[self.text] if self.isLocal else self.text, True, (255, 255, 255))
 
+        x = self.x if not (self.x == "center") else Config.screen_width/2 - rendered_text.get_width()/2
+        y = self.y if not (self.y == "center") else Config.screen_height/2 - rendered_text.get_height()/2
+
         self.rect = pygame.rect.Rect(
-            (self.rect.x, self.rect.y), 
+            (x, y), 
             (rendered_text.get_width(), rendered_text.get_height())
         )
 
