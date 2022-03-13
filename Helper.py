@@ -125,7 +125,7 @@ class Helper(pygame.sprite.Sprite):
             self.t2.cancel()
 
     def draw(self):
-        self.image.fill(self.background)
+        self.image.fill((0, 0, 0, 0))
 
         self.image.blit(self.pic_current, (0, self.cloud_h-20))
 
