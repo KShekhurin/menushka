@@ -8,15 +8,13 @@ import Settings
 
 pygame.init()
 
-#default_pic = pygame.image.load('pics/сварог.png')
-#spec_pic1 = pygame.image.load('pics/сварогсхризм.png')
-#spec_pic2 = pygame.image.load('pics/сварогврн.png')
 btn_pic = pygame.image.load('pics/кнопка.png')
 selector_pic_top = pygame.image.load('pics/свиток начало.png')
 selector_pic_middle = pygame.image.load('pics/свиток середина.jpg')
 selector_pic_bottom = pygame.image.load('pics/свиток конец.png')
 slider_line_img = pygame.image.load('pics/прутик.png')
 slider_circle_img = pygame.image.load('pics/мандарин.png')
+mao_bg = pygame.image.load('pics/mao_bg.png')
 
 btn_click_snd = pygame.mixer.Sound('music/клик.mp3')
 btn_hover_snd = pygame.mixer.Sound('music/струна.wav')
@@ -27,11 +25,6 @@ class Frame:
     def __init__(self):
         self.drawable = []
         self.updatable = []
-        self.background = (26,197,0)
-        if Config.current_local == Config.local_chi: self.background = (255, 0, 0)
-        if Config.current_local == Config.local_lat: self.background = (0, 0, 255)
-
-        self.no_action_timer = pygame.time.get_ticks()
 
     def post_init(self, app):
         self.app = app
@@ -49,12 +42,68 @@ class Frame:
             updatable.update(events)
 
     def draw(self, screen):
-        screen.fill(self.background)
         for drawable in self.drawable:
             drawable.draw(screen)
 
 
-class MenuFrame(Frame):
+class NonGameFrame(Frame):
+    def __init__(self):
+        super().__init__()
+
+        self.background = (26,197,0)
+        self.background_img = None
+        if Config.current_local == Config.local_chi: 
+            self.background = (255, 0, 0)
+            self.background_img = mao_bg
+        elif Config.current_local == Config.local_lat: 
+            self.background = (0, 0, 255)
+
+        self.no_action_timer = pygame.time.get_ticks()
+    
+    def draw(self, screen):
+        if self.background_img is not None:
+            screen.blit(self.background_img, (0, 0))
+        else:
+            screen.fill(self.background)
+        return super().draw(screen)
+    
+    def change_localization(self, options):
+        self.no_action_timer = pygame.time.get_ticks()
+
+        lang = options[0]
+        if (lang == "русский"):
+            Config.current_local = Config.local_rus
+            self.background = (26,197,0)
+            self.background_img = None
+
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
+            pygame.mixer.music.load('music/славяне.mp3')
+            pygame.mixer.music.play(100)
+        elif (lang == "китайский"):
+            Config.current_local = Config.local_chi
+            
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
+            pygame.mixer.music.load('music/китайцы.mp3')
+            pygame.mixer.music.play(100)
+
+            self.background_img = mao_bg
+        elif (lang == "латинский"):
+            Config.current_local = Config.local_lat
+            self.background = (0, 0, 255)
+            self.background_img = None
+
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
+            pygame.mixer.music.load('music/римские.mp3')
+            pygame.mixer.music.play(100)
+
+        self.helper.change_background(self.background)
+        Settings.lang_options = options
+
+
+class MenuFrame(NonGameFrame):
     def __init__(self):
         super().__init__()
     
@@ -69,41 +118,7 @@ class MenuFrame(Frame):
 
     def exit(self):
         self.helper.quit_threads()
-        #sys.exit() # Да, это плохо. Я протяну колбеки, но потом.
         self.app.quit()
-
-    def change_localization(self, options):
-        self.no_action_timer = pygame.time.get_ticks()
-
-        lang = options[0]
-        if (lang == "русский"):
-            Config.current_local = Config.local_rus
-            self.background = (26,197,0)
-
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
-            pygame.mixer.music.load('music/славяне.mp3')
-            pygame.mixer.music.play(100)
-        elif (lang == "китайский"):
-            Config.current_local = Config.local_chi
-            self.background = (255, 0, 0)
-
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
-            pygame.mixer.music.load('music/китайцы.mp3')
-            pygame.mixer.music.play(100)
-        elif (lang == "латинский"):
-            Config.current_local = Config.local_lat
-            self.background = (0, 0, 255)
-
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
-            pygame.mixer.music.load('music/римские.mp3')
-            pygame.mixer.music.play(100)
-
-        self.helper.change_background(self.background)
-
-        Settings.lang_options = options
 
     def post_init(self, app):
         super().post_init(app)
@@ -138,7 +153,7 @@ class MenuFrame(Frame):
             self.helper.say_motiv()
             self.no_action_timer = pygame.time.get_ticks()
 
-class SettingsFrame(Frame):
+class SettingsFrame(NonGameFrame):
     def __init__(self):
         super().__init__()
         self.sound_volume = Settings.sound_volume
@@ -172,41 +187,6 @@ class SettingsFrame(Frame):
         self.no_action_timer = pygame.time.get_ticks()
 
         self.music_volume = new_volume
-
-    def change_localization(self, options):
-        self.no_action_timer = pygame.time.get_ticks()
-
-        lang = options[0]
-        if (lang == "русский"):
-            Config.current_local = Config.local_rus
-            self.background = (26,197,0)
-
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
-            pygame.mixer.music.load('music/славяне.mp3')
-            pygame.mixer.music.play(100)
-        elif (lang == "китайский"):
-            Config.current_local = Config.local_chi
-            self.background = (255, 0, 0)
-
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
-            pygame.mixer.music.load('music/китайцы.mp3')
-            pygame.mixer.music.play(100)
-        elif (lang == "латинский"):
-            Config.current_local = Config.local_lat
-            self.background = (0, 0, 255)
-
-            pygame.mixer.music.stop()
-            pygame.mixer.music.unload()
-            pygame.mixer.music.load('music/римские.mp3')
-            pygame.mixer.music.play(100)
-
-        self.helper.change_background(self.background)
-        self.sound_volume_slider.change_background(self.background)
-        self.music_volume_slider.change_background(self.background)
-
-        Settings.lang_options = options
 
     def post_init(self, app):
         super().post_init(app)

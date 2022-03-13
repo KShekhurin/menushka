@@ -148,7 +148,7 @@ class Slider(pygame.sprite.Sprite):
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
 
     def draw(self):
-        self.image.fill(self.background)
+        self.image.fill((0, 0, 0, 0))
 
         #pygame.draw.line(
         #    self.image, (255, 255, 255), 
