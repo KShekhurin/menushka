@@ -11,21 +11,26 @@ class App:
         pygame.font.init()
         
         self.screen = pygame.display.set_mode(self.start_size)
-        run = True
+        self.run = True
 
         self.loaded_frame.post_init(self)
 
-        while run:
+        while self.run:
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
-                    run = False
+                    if hasattr(self.loaded_frame, "helper"):
+                        self.loaded_frame.helper.quit_threads()
+                    self.quit()
 
             #self.screen.fill((0, 0, 255))
             self.loaded_frame.update(events)
             self.loaded_frame.draw(self.screen)
 
             pygame.display.flip()
+
+    def quit(self):
+        self.run = False
     
     def reload_frame(self, new_frame: Frame):
         self.loaded_frame = new_frame

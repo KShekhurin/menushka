@@ -3,15 +3,19 @@ import Config
 
 
 class ButtonDesignParams:
-    def __init__(self, pic=None, sound=None):
-        self.background_color_default = (0, 0, 0)
+    def __init__(self, background_color_default=(0, 0, 0), pic_default=None, pic_focused=None, sound_hover=None, sound_click=None, font_size=26):
+        self.background_color_default = background_color_default
         self.foreground_color_default = (255, 255, 255)
 
         self.background_color_selected = (255, 255, 255)
         self.foreground_color_selected = (0, 0, 0)
 
-        self.background_pic_surf = pic
-        self.button_sound = sound
+        self.background_pic_default = pic_default
+        self.background_pic_focused = pic_focused
+        self.sound_hover = sound_hover
+        self.sound_click = sound_click
+
+        self.font_size = font_size
 
 
 class Button(pygame.sprite.Sprite):
@@ -19,18 +23,25 @@ class Button(pygame.sprite.Sprite):
             text="", design: ButtonDesignParams=ButtonDesignParams(), onClick=None, *groups):
         super().__init__(*groups)
         self.x, self.y = pos
-        self.h, self.w = size
+        self.w, self.h = size
         self.text = text
+
+        self.x = self.x if not (self.x == "center") else Config.screen_width/2 - self.w/2
+        self.y = self.y if not (self.y == "center") else Config.screen_height/2 - self.h/2
 
         self.onClick = onClick
         self.focused = False
         self.selected = False
-
-        self.font = pygame.font.Font("Cyberbit.ttf", 26)
+        self.focused_snd_played = False
 
         self.design = design
-        self.rect = pygame.rect.Rect(pos, size)
+        self.rect = pygame.rect.Rect((self.x, self.y), size)
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
+
+        self.font = pygame.font.Font("Cyberbit.ttf", self.design.font_size)
+
+        self.design.background_pic_default = pygame.transform.scale(self.design.background_pic_default, (self.w, self.h))
+        self.design.background_pic_focused = pygame.transform.scale(self.design.background_pic_focused, (self.w, self.h))
 
     def draw(self):
         background = (self.design.background_color_default 
@@ -38,20 +49,21 @@ class Button(pygame.sprite.Sprite):
         foreground = (self.design.foreground_color_default 
             if not self.focused else self.design.foreground_color_selected)
 
-        self.image.fill(background)
+        if self.design.background_pic_default is None:
+            self.image.fill(background)
+        else:
+            self.image.blit(self.design.background_pic_default, (0, 0))
         rendered_text = self.font.render(Config.current_local[self.text], True, foreground)
 
         text_width = rendered_text.get_width()
-        text_heigh = rendered_text.get_height()
+        text_height = rendered_text.get_height()
 
         if self.focused:
-            self.image.blit(self.design.background_pic_surf, (0, 0))
-            if self.selected:
-                self.design.button_sound.play()
+            self.image.blit(self.design.background_pic_focused, (0, 0))
 
         self.image.blit(rendered_text, (
-                (self.h - text_width) // 2,
-                (self.w - text_heigh) // 2
+                (self.w - text_width) // 2,
+                (self.h - text_height) // 2
             )
         )
     
@@ -60,26 +72,33 @@ class Button(pygame.sprite.Sprite):
 
         if self.rect.collidepoint(mouse_pos):
             self.focused = True
+
+            if not self.focused_snd_played:
+                self.design.sound_hover.play()
+                self.focused_snd_played = True
         else:
             self.focused = False
+
+            self.focused_snd_played = False    
 
         for event in events[0]:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.focused and self.onClick is not None:
                     self.onClick()
                     self.selected = True
+                    self.design.sound_click.play()
 
         self.draw()
 
 
 
 class Label(pygame.sprite.Sprite):
-    def __init__(self, pos, text, isLocal=True, *groups) -> None:
+    def __init__(self, pos, text, isLocal=True, font_size=26, *groups) -> None:
         super().__init__(*groups)
 
         self.text = text
 
-        self.font = pygame.font.Font("Cyberbit.ttf", 26)
+        self.font = pygame.font.Font("Cyberbit.ttf", font_size)
         self.isLocal = isLocal
 
         self.x, self.y = pos
@@ -106,12 +125,13 @@ class Label(pygame.sprite.Sprite):
 
 
 class Slider(pygame.sprite.Sprite):
-    def __init__(self, pos=(0, 0), rel_pos=(0, 0), size=(10, 10), level=0, on_value_changed=None, *groups):
+    def __init__(self, pos=(0, 0), rel_pos=(0, 0), size=(10, 10), level=0, background=(0,0,0), line_img=None, circle_img=None, on_value_changed=None, *groups):
         super().__init__(*groups)
         self.x, self.y = pos
         self.rel_x, self.rel_y = rel_pos
-        self.h, self.w = size
+        self.w, self.h = size
         self.level = level
+        self.background = background
 
         self.focused = False
         self.selected = False
@@ -119,24 +139,31 @@ class Slider(pygame.sprite.Sprite):
 
         self.font = pygame.font.Font(None, 36)
 
+        self.line_img = line_img
+        self.circle_img = circle_img
+        self.line_img = pygame.transform.scale(self.line_img, (self.w, self.h))
+        self.circle_img = pygame.transform.scale(self.circle_img, (self.h, self.h))
+
         self.rect = pygame.rect.Rect(pos, size)
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
 
     def draw(self):
-        self.image.fill((0, 0, 0))
+        self.image.fill(self.background)
 
-        pygame.draw.line(
-            self.image, (255, 255, 255), 
-            (self.w // 2, self.w // 2), 
-            (self.h - self.w // 2, self.w // 2),
-            2
-        )
+        #pygame.draw.line(
+        #    self.image, (255, 255, 255), 
+        #    (self.w // 2, self.w // 2), 
+        #    (self.h - self.w // 2, self.w // 2),
+        #    2
+        #)
+        self.image.blit(self.line_img, (0, 0))
 
-        pygame.draw.circle(
-            self.image, (255, 255, 255),
-            (self.w // 2  + (self.h - self.w) * self.level, self.w // 2),
-            self.w // 5
-        )
+        #pygame.draw.circle(
+        #    self.image, (255, 255, 255),
+        #    (self.h // 2  + (self.w - self.h) * self.level, self.h // 2),
+        #    self.h // 3
+        #)
+        self.image.blit(self.circle_img, ((self.w - self.h) * self.level, 0))
     
     def update(self, *events):
         mouse_pos = pygame.mouse.get_pos()
@@ -158,21 +185,24 @@ class Slider(pygame.sprite.Sprite):
         if self.selected:
             relative_x_pos = mouse_pos[0] - self.x
 
-            if relative_x_pos <= self.w // 2:
+            if relative_x_pos <= self.h // 2:
                 self.level = 0
-            elif relative_x_pos >= self.h - self.w // 2:
+            elif relative_x_pos >= self.w - self.h // 2:
                 self.level = 1
             else:
-                self.level = (mouse_pos[0] - self.w // 2) / (self.h - self.w)
+                self.level = (mouse_pos[0] - self.h // 2) / (self.w - self.h)
             
             if self.on_value_changed is not None:
                 self.on_value_changed(self.level)
 
         self.draw()
 
+    def change_background(self, new_background):
+        self.background = new_background
+
 
 class SliderWithValue(pygame.sprite.Sprite):
-    def __init__(self, pos, slider_size, level, on_value_changed, *groups) -> None:
+    def __init__(self, pos, slider_size, level, background, line_img, circle_img, on_value_changed, *groups) -> None:
         super().__init__(*groups)
 
         self.level = level
@@ -180,8 +210,8 @@ class SliderWithValue(pygame.sprite.Sprite):
         self.on_value_changed = on_value_changed
 
         self.inner_group = pygame.sprite.Group()
-        self.slider = Slider((0, 0), pos, slider_size, level, self.level_changed, self.inner_group)
-        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, self.inner_group)
+        self.slider = Slider((0, 0), pos, slider_size, level, background, line_img, circle_img, self.level_changed, self.inner_group)
+        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, 26, self.inner_group)
 
         self.rect = pygame.rect.Rect(pos, (self.slider.rect.width + self.label.rect.width + 10, self.slider.rect.height))
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
@@ -193,6 +223,9 @@ class SliderWithValue(pygame.sprite.Sprite):
 
     def get_percent(self):
         return str(f"{round(self.level * 100)}%")
+
+    def change_background(self, new_background):
+        self.slider.change_background(new_background)
     
     def draw(self):
         self.rect = pygame.rect.Rect(
@@ -212,9 +245,11 @@ class SliderWithValue(pygame.sprite.Sprite):
 
 
 class SelectorDesignParams:
-    def __init__(self, pic=None, sound=None):
-        self.background_pic = pic
-        self.sound = sound
+    def __init__(self, pic_top=None, pic_middle=None, pic_bottom=None, snd_selected=None):
+        self.pic_top = pic_top
+        self.pic_middle = pic_middle
+        self.pic_bottom = pic_bottom
+        self.snd_selected = snd_selected
 
 
 class SelectorOption(pygame.sprite.Sprite):
@@ -225,7 +260,7 @@ class SelectorOption(pygame.sprite.Sprite):
         self.w, self.h = size
 
         self.text = text
-        self.font = pygame.font.Font("Cyberbit.ttf", 26)
+        self.font = pygame.font.Font("Cyberbit.ttf", 22)
 
         self.focused = False
 
@@ -236,9 +271,13 @@ class SelectorOption(pygame.sprite.Sprite):
         foreground = (255, 255, 255) if not self.focused else (0, 0, 0)
         background = (0, 0, 0) if not self.focused else (255, 255, 255)
     
-        rendered_text = self.font.render(Config.current_local[self.text], True, foreground)
+        rendered_text = self.font.render(Config.current_local[self.text], True, (0, 0, 0))
 
-        self.image.fill(background)
+        if self.focused:
+            self.image.fill((255, 255, 255, 128))
+        else:
+            self.image.fill((255, 255, 255, 0))
+        #self.image.fill(background)
         self.image.blit(rendered_text, (self.w/2 - rendered_text.get_width()/2, self.h/2 - rendered_text.get_height()/2))
 
     def update(self, *events):
@@ -269,45 +308,63 @@ class Selector(pygame.sprite.Sprite):
         self.x, self.y = pos
         self.w, self.h = size
 
-        self.font = pygame.font.Font("Cyberbit.ttf", 26)
+        self.top_part_h = 96*self.w//242
+        self.middle_part_w = 204*self.w//244
+        self.middle_part_h = 27*self.w//204
+        self.bottom_part_h = 28*self.w//244
+
+        self.font = pygame.font.Font("Cyberbit.ttf", 22)
 
         self.inner_group = pygame.sprite.Group()
         self.options = []
         for i in range(1, len(options)):
-            self.options.append(SelectorOption((0, self.h * i), (self.w, self.h), options[i], self.inner_group))
+            self.options.append(SelectorOption(((self.w-self.middle_part_w)//2, self.middle_part_h * 2 * (i+1.5)), (self.middle_part_w, self.middle_part_h * 2), options[i], self.inner_group))
 
         self.selected = False
         self.focused = False
         self.currentOption = options[0] if len(options) > 0 else "пусто"
         self.on_selected_change = on_selected_change
 
+        self.design = design
         self.rect = pygame.rect.Rect(pos, size)
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
 
-        self.design = design
+        self.design.pic_top = pygame.transform.scale(self.design.pic_top, (self.w, self.top_part_h))
+        self.design.pic_middle = pygame.transform.scale(self.design.pic_middle, (self.middle_part_w, self.middle_part_h))
+        self.design.pic_bottom = pygame.transform.scale(self.design.pic_bottom, (self.w, self.bottom_part_h))
 
     def draw(self):
         if self.selected:
-            self.rect = pygame.rect.Rect((self.x, self.y), (self.w, self.h * (len(self.options) + 1)))
+            self.rect = pygame.rect.Rect((self.x, self.y), (self.w, self.top_part_h + self.bottom_part_h + self.middle_part_h * 4 * len(self.options)))
             self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
         else:
             self.rect = pygame.rect.Rect((self.x, self.y), (self.w, self.h))
             self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
 
-        self.image.fill((0, 0, 0))
+        #self.image.fill((0, 0, 0))
 
-        if self.focused or self.selected:
-            self.image.blit(self.design.background_pic, (0, 0))
+        #if self.focused or self.selected:
+        #    self.image.blit(self.design.background_pic, (0, 0))
+        middle_count = 2
+        self.image.blit(self.design.pic_top, (0, 0))
+        self.image.blit(self.design.pic_middle, ((self.w-self.middle_part_w)//2, self.top_part_h))
+        self.image.blit(self.design.pic_middle, ((self.w-self.middle_part_w)//2, self.top_part_h + self.middle_part_h))
+        if self.selected:
+            for i in range(0, len(self.options)*2):
+                self.image.blit(self.design.pic_middle, ((self.w-self.middle_part_w)//2, self.top_part_h + self.middle_part_h * middle_count))
+                middle_count += 1
+        #print(middle_count)
+        self.image.blit(self.design.pic_bottom, (0, self.top_part_h + self.middle_part_h * middle_count))
 
-        rendered_text = self.font.render(Config.current_local[self.currentOption], True, (255, 255, 255))
-        self.image.blit(rendered_text, (self.w/2 - rendered_text.get_width()/2 - 10, self.h/2 - rendered_text.get_height()/2))
+        rendered_text = self.font.render(Config.current_local[self.currentOption], True, (0, 0, 0))
+        self.image.blit(rendered_text, (self.w/2 - rendered_text.get_width()/2 - 10, self.top_part_h + (self.middle_part_h*2-rendered_text.get_height())//2))
 
         if not self.selected:
-            pygame.draw.line(self.image, (255, 255, 255), (self.w - 40, self.h/2 - 10), (self.w - 30, self.h/2 + 10), 5)
-            pygame.draw.line(self.image, (255, 255, 255), (self.w - 20, self.h/2 - 10), (self.w - 30, self.h/2 + 10), 5)
+            pygame.draw.line(self.image, (0, 0, 0), (self.w - 40, self.h/2 + 14), (self.w - 35, self.h/2 + 25), 2)
+            pygame.draw.line(self.image, (0, 0, 0), (self.w - 30, self.h/2 + 14), (self.w - 35, self.h/2 + 25), 2)
         else:
-            pygame.draw.line(self.image, (255, 255, 255), (self.w - 40, self.h/2 + 10), (self.w - 30, self.h/2 - 10), 5)
-            pygame.draw.line(self.image, (255, 255, 255), (self.w - 20, self.h/2 + 10), (self.w - 30, self.h/2 - 10), 5)
+            pygame.draw.line(self.image, (0, 0, 0), (self.w - 40, self.h/2 + 25), (self.w - 35, self.h/2 + 14), 2)
+            pygame.draw.line(self.image, (0, 0, 0), (self.w - 30, self.h/2 + 25), (self.w - 35, self.h/2 + 14), 2)
 
         if self.selected:
             self.inner_group.draw(self.image)
