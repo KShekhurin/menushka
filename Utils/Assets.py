@@ -9,8 +9,8 @@ resources = {
     "menu_slider_circle_pic": [None, "pics/мандарин.png"],
     "menu_background_chi_pic": [None, "pics/mao_bg.png"],
 
-    "menu_button_click_snd": [None, "music/клик.mp3"],
-    "menu_button_hover_snd": [None, "music/струна.wav"],
+    "menu_button_click_snd": [None, "snd/клик.mp3"],
+    "menu_button_hover_snd": [None, "snd/струна.wav"],
 
     "helper_default_pic": [None, "pics/якубович.jpg"],
     "helper_blink_pic": [None, "pics/якубович моргает.jpg"],
@@ -18,7 +18,7 @@ resources = {
     "helper_speak_blink_pic": [None, "pics/автомобиль моргает.jpg"],
     "helper_cloud_pic": [None, "pics/облако.png"],
 
-    "helper_angry_snd": [None, "music/сварог.wav"],
+    "helper_angry_snd": [None, "snd/сварог.wav"],
 }
 
 def get_res(res_name):
