@@ -1,5 +1,5 @@
 import pygame
-import Config
+import Utils.Config as Config
 
 
 class ButtonDesignParams:

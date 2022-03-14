@@ -1,21 +1,20 @@
 import pygame
 from threading import Timer
-import Config
-import Settings
+import Utils.Config as Config
+import Utils.Settings as Settings
 import random
-
-pygame.mixer.init()
-
-h_pic_default = pygame.image.load("pics/якубович.jpg")
-h_pic_blink = pygame.image.load("pics/якубович моргает.jpg")
-h_pic_speak = pygame.image.load("pics/автомобиль.jpg")
-h_pic_speak_blink = pygame.image.load("pics/автомобиль моргает.jpg")
-h_pic_cloud = pygame.image.load("pics/облако.png")
-h_click_snd = pygame.mixer.Sound("music/сварог.wav")
+from Utils.Assets import get_res
 
 class Helper(pygame.sprite.Sprite):
     def __init__(self, pos, size, background, *groups):
         super().__init__(*groups)
+
+        h_pic_default = get_res("helper_default_pic")
+        h_pic_blink = get_res("helper_blink_pic")
+        h_pic_speak = get_res("helper_speak_pic")
+        h_pic_speak_blink = get_res("helper_speak_blink_pic")
+        h_pic_cloud = get_res("helper_cloud_pic")
+        self.click_snd = get_res("helper_angry_snd")
 
         self.background = background
 
@@ -110,7 +109,7 @@ class Helper(pygame.sprite.Sprite):
         return self.isSpeaking
 
     def humble(self):
-        h_click_snd.play()
+        self.click_snd.play()
         r = random.randint(0, 1)
         if r == 0 or self.isSpeaking:
             self.blink(0.75)
@@ -154,8 +153,5 @@ class Helper(pygame.sprite.Sprite):
         for event in events[0]:
             if event.type == pygame.MOUSEBUTTONDOWN and self.focused:
                 self.humble()
-                #self.blink()
-                #self.say("Нажимай уже на кнопку!")
-                pass
 
         self.draw()

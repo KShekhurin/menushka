@@ -1,6 +1,6 @@
 from App import App
-from Frames import MenuFrame
-import Config
+from Frames.MenuFrame import MenuFrame
+import Utils.Config as Config
 
 def main():
     frame = MenuFrame()

@@ -1,5 +1,5 @@
 import pygame
-from Frames import Frame
+from Frames.Frames import Frame
 
 class App:
     def __init__(self, loaded_frame: Frame, start_size=(200, 200)):
@@ -9,6 +9,10 @@ class App:
     def start(self):
         pygame.init()
         pygame.font.init()
+        pygame.mixer.init()
+
+        pygame.mixer.music.load('music/славяне.mp3')
+        pygame.mixer.music.play(100)
         
         self.screen = pygame.display.set_mode(self.start_size)
         self.run = True
