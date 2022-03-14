@@ -1,5 +1,8 @@
 import pygame
 from Frames.Frames import Frame
+from Pointer import Pointer
+from Utils.Assets import get_res
+import Utils.Config as Config
 
 class App:
     def __init__(self, loaded_frame: Frame, start_size=(200, 200)):
@@ -15,7 +18,11 @@ class App:
         pygame.mixer.music.play(100)
         
         self.screen = pygame.display.set_mode(self.start_size)
+        pygame.display.set_caption(Config.window_title)
         self.run = True
+
+        pygame.mouse.set_visible(False)
+        self.pointer = Pointer(pygame.mouse.get_pos(), (40, 60), get_res("pointer_hand_pic"))
 
         self.loaded_frame.post_init(self)
 
@@ -28,8 +35,12 @@ class App:
                     self.quit()
 
             #self.screen.fill((0, 0, 255))
+            self.pointer.update_pos(pygame.mouse.get_pos())
+
             self.loaded_frame.update(events)
             self.loaded_frame.draw(self.screen)
+
+            self.pointer.draw(self.screen)
 
             pygame.display.flip()
 

@@ -1,6 +1,8 @@
 import pygame
 
 resources = {
+    "pointer_hand_pic": [None, "pics/рука.png"],
+
     "menu_button_pic": [None, "pics/кнопка.png"],
     "menu_selector_top_pic": [None, "pics/свиток начало.png"],
     "menu_selector_middle_pic": [None, "pics/свиток середина.jpg"],

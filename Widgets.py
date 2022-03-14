@@ -8,7 +8,7 @@ class ButtonDesignParams:
         self.foreground_color_default = (255, 255, 255)
 
         self.background_color_selected = (255, 255, 255)
-        self.foreground_color_selected = (0, 0, 0)
+        self.foreground_color_selected = (255,228,196)
 
         self.background_pic_default = pic_default
         self.background_pic_focused = pic_focused
