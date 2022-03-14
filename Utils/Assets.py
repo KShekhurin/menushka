@@ -21,6 +21,10 @@ resources = {
     "helper_cloud_pic": [None, "pics/облако.png"],
 
     "helper_angry_snd": [None, "snd/сварог.wav"],
+
+    "player_default_pic": [None, "pics/гг.png"],
+
+    "scene_field_background_pic": [None, "pics/1 сцена.jpg"],
 }
 
 def get_res(res_name):

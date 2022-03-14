@@ -1,5 +1,6 @@
 from Frames.Frames import *
 import Frames.SettingsFrame as SettingsFrame
+import Frames.GameFrame as GameFrame
 
 class MenuFrame(NonGameFrame):
     def __init__(self):
@@ -13,6 +14,13 @@ class MenuFrame(NonGameFrame):
         self.helper.quit_threads()
         
         self.app.reload_frame(SettingsFrame.SettingsFrame())
+
+    def start_game(self):
+        self.helper.save_blink_timer()
+        self.helper.quit_threads()
+        
+        scene_data = GameFrame.GameFrameData((0, 0, 0), get_res("scene_field_background_pic"), (300, 200))
+        self.app.reload_frame(GameFrame.GameFrame(scene_data))
 
     def exit(self):
         self.helper.quit_threads()
@@ -30,7 +38,7 @@ class MenuFrame(NonGameFrame):
         btn_hover_snd = get_res("menu_button_hover_snd")
         btn_click_snd = get_res("menu_button_click_snd")
 
-        Button(("center", 10 + 300), (250, 70), "новая_игра", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), None, self.buttons_group)
+        Button(("center", 10 + 300), (250, 70), "новая_игра", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.start_game, self.buttons_group)
         Button(("center", 90 + 300), (250, 70), "настройки", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_settings, self.buttons_group)
         Button(("center", 170 + 300), (250, 70), "выйти", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.exit, self.buttons_group)
 

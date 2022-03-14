@@ -31,6 +31,9 @@ class Frame:
         for drawable in self.drawable:
             drawable.draw(screen)
 
+    def is_non_game_frame(self):
+        return False
+
 
 class NonGameFrame(Frame):
     def __init__(self):
@@ -89,3 +92,6 @@ class NonGameFrame(Frame):
 
         self.helper.change_background(self.background)
         Settings.lang_options = options
+
+    def is_non_game_frame(self):
+        return True

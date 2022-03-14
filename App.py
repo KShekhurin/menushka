@@ -1,5 +1,6 @@
 import pygame
 from Frames.Frames import Frame
+from Frames.MenuFrame import MenuFrame
 from Pointer import Pointer
 from Utils.Assets import get_res
 import Utils.Config as Config
@@ -33,6 +34,10 @@ class App:
                     if hasattr(self.loaded_frame, "helper"):
                         self.loaded_frame.helper.quit_threads()
                     self.quit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE and not self.loaded_frame.is_non_game_frame():
+                        self.reload_frame(MenuFrame())
 
             #self.screen.fill((0, 0, 255))
             self.pointer.update_pos(pygame.mouse.get_pos())
