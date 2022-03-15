@@ -1,6 +1,7 @@
+from re import S
 import pygame
 import Utils.Config as Config
-
+from Utils.Assets import get_res
 
 class ButtonDesignParams:
     def __init__(self, background_color_default=(0, 0, 0), pic_default=None, pic_focused=None, sound_hover=None, sound_click=None, font_size=26):
@@ -90,7 +91,63 @@ class Button(pygame.sprite.Sprite):
 
         self.draw()
 
+class PictureButton(pygame.sprite.Sprite):
+    def __init__(self, pos, size, def_pic, hover_pic, tip, on_click, on_hover, on_lose_hover, *groups):
+        super().__init__(*groups)
 
+        self.x, self.y = pos
+        self.w, self.h = size
+
+        self.def_pic = pygame.transform.scale(get_res(def_pic), size)
+        self.hover_pic = pygame.transform.scale(get_res(hover_pic), size)
+
+        self.tip = tip
+        self.on_click = on_click
+        self.on_hover = on_hover
+        self.on_lose_hover = on_lose_hover
+
+        self.focused = False
+        self.selected = False
+
+        self.rect = pygame.rect.Rect(pos, size)
+        self.image = pygame.Surface(size, pygame.SRCALPHA, 32)
+
+    def __draw_stroke(self):
+        pic = self.def_pic if not self.focused else self.hover_pic
+        mask = pygame.mask.from_surface(pic)
+        mask_outline = mask.outline()
+        pygame.draw.lines(self.image, (0, 0, 0), True, mask_outline, 2)
+
+    def draw(self):
+        self.image.fill((0, 0, 0, 0))
+
+        if not self.focused:
+            self.image.blit(self.def_pic, (0, 0))
+        else:
+            self.image.blit(self.hover_pic, (0, 0))
+
+        self.__draw_stroke()
+
+    def update(self, events):
+        mouse_pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(mouse_pos) and not self.focused:
+            self.focused = True
+            self.on_hover(self.tip, False)
+        elif not self.rect.collidepoint(mouse_pos) and self.focused:
+            self.focused = False
+            self.on_lose_hover()
+
+        for event in events[0]:
+            if event.type == pygame.MOUSEBUTTONDOWN and self.focused:
+                if event.button == 1 and not self.selected:
+                    self.selected = True
+                    self.on_click()
+
+            if event.type == pygame.MOUSEBUTTONUP and self.selected:
+                self.selected = False
+
+        self.draw()
 
 class Label(pygame.sprite.Sprite):
     def __init__(self, pos, text, isLocal=True, font_size=26, color=(255, 255, 255), outline_color=(0,0,0), outline_w=0, *groups) -> None:

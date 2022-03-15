@@ -2,6 +2,8 @@ from Frames.Frames import *
 from Player import Player
 from Item import *
 from Pointer import PointerState
+from Widgets import PictureButton
+import Frames.MenuFrame as MenuFrame
 
 class GameFrameData:
     def __init__(self, background_color, background_pic, player_pos, items_data):
@@ -37,13 +39,19 @@ class GameFrame(Frame):
 
         super().update(events)
 
-    def show_tip(self, tip):
+    def show_tip(self, tip, is_pickable):
         self.tip_label.text = tip
-        self.app.pointer.set_state(PointerState.PICKUP)
+        if is_pickable:
+            self.app.pointer.set_state(PointerState.PICKUP)
 
     def clear_tip(self):
         self.tip_label.text = ""
         self.app.pointer.set_state(PointerState.DEFAULT)
+
+    def goto_menu(self):
+        self.helper.save_blink_timer()
+
+        self.app.reload_frame(MenuFrame.MenuFrame())
 
     def post_init(self, app):
         super().post_init(app)
@@ -56,5 +64,8 @@ class GameFrame(Frame):
         
         for item_data in self.data.items_data:
            self.items.append(Item(item_data, self.show_tip, self.clear_tip, self.item_group)) 
+
+        self.inventory_btn = PictureButton((10, 10), (60, 70), "scene_open_inventory_btn_def_pic", "scene_open_inventory_btn_hover_pic", "Открыть инвентарь", None, self.show_tip, self.clear_tip, self.game_group)
+        self.save_btn = PictureButton((90, 10), (60, 70), "scene_save_btn_def_pic", "scene_save_btn_hover_pic", "Сохраниться", self.goto_menu, self.show_tip, self.clear_tip, self.game_group)
 
         self.append_many_widgets((self.item_group, self.game_group,))

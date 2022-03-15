@@ -33,15 +33,6 @@ class Item(pygame.sprite.Sprite):
             self.__draw_stroke()
 
     def __draw_stroke(self):
-        #mask = pygame.mask.from_surface(self.data.default_pic)
-        #mask_surf = mask.to_surface()
-        #mask_surf.set_colorkey((0, 0, 0))
-
-        #self.image.blit(mask_surf, (-self.data.stroke_width, 0))
-        #self.image.blit(mask_surf, (self.data.stroke_width, 0))
-        #self.image.blit(mask_surf, (0, -self.data.stroke_width))
-        #self.image.blit(mask_surf, (0, self.data.stroke_width))
-
         mask = pygame.mask.from_surface(self.data.default_pic)
         mask_outline = mask.outline()
         pygame.draw.lines(self.image, (0, 0, 0), True, mask_outline, self.data.stroke_width)
@@ -50,7 +41,7 @@ class Item(pygame.sprite.Sprite):
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos) and not self.focused:
             self.focused = True
-            self.on_focuse(self.data.tip)
+            self.on_focuse(self.data.tip, True)
         elif not self.rect.collidepoint(mouse_pos) and self.focused:
             self.focused = False
             self.on_lose_focuse()
