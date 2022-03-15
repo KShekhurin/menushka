@@ -25,6 +25,8 @@ resources = {
     "player_default_pic": [None, "pics/гг.png"],
 
     "scene_field_background_pic": [None, "pics/1 сцена.jpg"],
+
+    "item_plate_pic": [None, "pics/тарелка.png"]
 }
 
 def get_res(res_name):

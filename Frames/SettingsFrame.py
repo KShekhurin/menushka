@@ -52,17 +52,15 @@ class SettingsFrame(NonGameFrame):
 
         Label(("center", 40), "настройки", True, 36, self.buttons_group)
 
-        Label((175, 120), "громкость_звуков", True, 22, self.buttons_group)
+        Label((175, 120), "громкость_звуков", True, 22, (255, 255, 255), self.buttons_group)
         self.sound_volume_slider = SliderWithValue((380, 110), (255, 70), self.sound_volume, self.background, slider_line_img, slider_circle_img, self.update_sound_volume, self.buttons_group)
-        Label((175, 230), "громкость_музыки", True, 22, self.buttons_group)
+        Label((175, 230), "громкость_музыки", True, 22, (255, 255, 255), self.buttons_group)
         self.music_volume_slider = SliderWithValue((380, 220), (255, 70), self.music_volume, self.background, slider_line_img, slider_circle_img, self.update_music_volume, self.buttons_group)
 
         Button(("center", 340), (300, 70), "сохранить_изменения", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd, 22), self.save_changes, self.buttons_group)
         Button((575, 525), (200, 50), "вернуться", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_menu, self.buttons_group)
 
         Selector((0, 0), (150, 120), Settings.lang_options, SelectorDesignParams(selector_pic_top, selector_pic_middle, selector_pic_bottom, btn_click_snd),self.change_localization, self.buttons_group)
-
-        self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.background, self.buttons_group)
 
         self.append_many_widgets((
             self.buttons_group,

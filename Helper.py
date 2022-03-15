@@ -6,7 +6,7 @@ import random
 from Utils.Assets import get_res
 
 class Helper(pygame.sprite.Sprite):
-    def __init__(self, pos, size, background, *groups):
+    def __init__(self, pos, size, *groups):
         super().__init__(*groups)
 
         h_pic_default = get_res("helper_default_pic")
@@ -15,8 +15,6 @@ class Helper(pygame.sprite.Sprite):
         h_pic_speak_blink = get_res("helper_speak_blink_pic")
         h_pic_cloud = get_res("helper_cloud_pic")
         self.click_snd = get_res("helper_angry_snd")
-
-        self.background = background
 
         self.blink_timer = Settings.helper_blink_timer if Settings.helper_blink_timer != 0 else pygame.time.get_ticks()
 
@@ -99,9 +97,6 @@ class Helper(pygame.sprite.Sprite):
     def default(self):
         self.pic_current = self.pic_default
 
-    def change_background(self, new_background):
-        self.background = new_background
-
     def save_blink_timer(self):
         Settings.helper_blink_timer = self.blink_timer
 
@@ -150,8 +145,8 @@ class Helper(pygame.sprite.Sprite):
         elif is_time_to_blink and self.isSpeaking:
             self.speak_blink()
 
-        for event in events[0]:
-            if event.type == pygame.MOUSEBUTTONDOWN and self.focused:
-                self.humble()
+        #for event in events[0]:
+        #    if event.type == pygame.MOUSEBUTTONDOWN and self.focused:
+        #        self.humble()
 
         self.draw()

@@ -4,6 +4,7 @@ from Frames.MenuFrame import MenuFrame
 from Pointer import Pointer
 from Utils.Assets import get_res
 import Utils.Config as Config
+import Utils.Settings as Settings
 
 class App:
     def __init__(self, loaded_frame: Frame, start_size=(200, 200)):
@@ -17,6 +18,7 @@ class App:
 
         pygame.mixer.music.load('music/славяне.mp3')
         pygame.mixer.music.play(100)
+        pygame.mixer.music.set_volume(Settings.music_volume)
         
         self.screen = pygame.display.set_mode(self.start_size)
         pygame.display.set_caption(Config.window_title)

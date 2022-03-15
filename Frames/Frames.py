@@ -14,6 +14,10 @@ class Frame:
 
     def post_init(self, app):
         self.app = app
+        self.helper_group = pygame.sprite.Group()
+
+        self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.helper_group)
+        self.append_widget(self.helper_group)
 
     def append_widget(self, widget):
         self.drawable.append(widget)
@@ -89,9 +93,16 @@ class NonGameFrame(Frame):
             pygame.mixer.music.unload()
             pygame.mixer.music.load('music/римские.mp3')
             pygame.mixer.music.play(100)
-
-        self.helper.change_background(self.background)
+            
         Settings.lang_options = options
+
+    def update(self, *events):
+        super().update(*events)
+
+        for event in events[0]:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.helper.rect.collidepoint(event.pos) and event.button == 1:
+                    self.helper.humble()
 
     def is_non_game_frame(self):
         return True

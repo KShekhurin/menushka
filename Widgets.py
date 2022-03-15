@@ -83,7 +83,7 @@ class Button(pygame.sprite.Sprite):
 
         for event in events[0]:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if self.focused and self.onClick is not None:
+                if self.focused and self.onClick is not None and event.button == 1:
                     self.onClick()
                     self.selected = True
                     self.design.sound_click.play()
@@ -93,13 +93,14 @@ class Button(pygame.sprite.Sprite):
 
 
 class Label(pygame.sprite.Sprite):
-    def __init__(self, pos, text, isLocal=True, font_size=26, *groups) -> None:
+    def __init__(self, pos, text, isLocal=True, font_size=26, color=(255, 255, 255), *groups) -> None:
         super().__init__(*groups)
 
         self.text = text
 
         self.font = pygame.font.Font("Cyberbit.ttf", font_size)
         self.isLocal = isLocal
+        self.color = color
 
         self.x, self.y = pos
 
@@ -107,7 +108,7 @@ class Label(pygame.sprite.Sprite):
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
     
     def draw(self):
-        rendered_text = self.font.render(Config.current_local[self.text] if self.isLocal else self.text, True, (255, 255, 255))
+        rendered_text = self.font.render(Config.current_local[self.text] if self.isLocal else self.text, True, self.color)
 
         x = self.x if not (self.x == "center") else Config.screen_width/2 - rendered_text.get_width()/2
         y = self.y if not (self.y == "center") else Config.screen_height/2 - rendered_text.get_height()/2
@@ -177,7 +178,7 @@ class Slider(pygame.sprite.Sprite):
 
         for event in events[0]:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if self.focused:
+                if self.focused and event.button == 1:
                     self.selected = True
             if event.type == pygame.MOUSEBUTTONUP:
                 self.selected = False
@@ -211,7 +212,7 @@ class SliderWithValue(pygame.sprite.Sprite):
 
         self.inner_group = pygame.sprite.Group()
         self.slider = Slider((0, 0), pos, slider_size, level, background, line_img, circle_img, self.level_changed, self.inner_group)
-        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, 26, self.inner_group)
+        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, 26, (255, 255, 255), self.inner_group)
 
         self.rect = pygame.rect.Rect(pos, (self.slider.rect.width + self.label.rect.width + 10, self.slider.rect.height))
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
@@ -381,15 +382,17 @@ class Selector(pygame.sprite.Sprite):
 
         for event in events[0]:
             if event.type == pygame.MOUSEBUTTONDOWN and self.selected:
-                self.selected = False
-                for opt in self.options:
-                    if opt.isFocused():
-                        tmp = self.currentOption
-                        self.currentOption = opt.getText()
-                        opt.setText(tmp)
-                        options = [self.currentOption] + list(map(lambda x: x.getText(), self.options))
-                        self.on_selected_change(options)
+                if event.button == 1:
+                    self.selected = False
+                    for opt in self.options:
+                        if opt.isFocused():
+                            tmp = self.currentOption
+                            self.currentOption = opt.getText()
+                            opt.setText(tmp)
+                            options = [self.currentOption] + list(map(lambda x: x.getText(), self.options))
+                            self.on_selected_change(options)
             elif event.type == pygame.MOUSEBUTTONDOWN and self.focused and not self.selected:
-                self.selected = True
+                if event.button == 1:
+                    self.selected = True
 
         self.draw()

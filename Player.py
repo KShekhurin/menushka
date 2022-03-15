@@ -26,24 +26,26 @@ class Player(pygame.sprite.Sprite):
         self.image.blit(self.default_pic, (0, 0))
 
     def update(self, *events):
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        for event in events[0]:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self.destination = pygame.Vector2(mouse_x, mouse_y)
-                self.is_moving = True
-
         if self.is_moving:
-            movement = self.destination - self.pos
-            if movement.length() < self.speed:
-                self.pos = self.destination
-            elif movement.length() != 0:
-                movement.normalize_ip()
-                movement *= self.speed
-                self.pos += movement
-            
-            if movement.length() != 0:
-                self.rect.midbottom = list(int(v) for v in self.pos)
-            else:
-                self.is_moving = False
+            self.__smoothly_move()
 
         self.draw()
+
+    def move_to(self, destination: pygame.Vector2):
+        if self.pos - destination != 0:
+            self.destination = destination
+            self.is_moving = True
+
+    def __smoothly_move(self):
+        movement = self.destination - self.pos
+        if movement.length() < self.speed:
+            self.pos = self.destination
+        elif movement.length() != 0:
+            movement.normalize_ip()
+            movement *= self.speed
+            self.pos += movement
+        
+        if movement.length() != 0:
+            self.rect.midbottom = list(int(v) for v in self.pos)
+        else:
+            self.is_moving = False

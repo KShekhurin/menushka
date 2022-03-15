@@ -1,6 +1,7 @@
 from Frames.Frames import *
 import Frames.SettingsFrame as SettingsFrame
 import Frames.GameFrame as GameFrame
+from Item import ItemData
 
 class MenuFrame(NonGameFrame):
     def __init__(self):
@@ -18,8 +19,13 @@ class MenuFrame(NonGameFrame):
     def start_game(self):
         self.helper.save_blink_timer()
         self.helper.quit_threads()
+
+        items_data = (
+            ItemData((150, 70), (80, 80), get_res("menu_slider_circle_pic"), 2, "Мандарин - царь фруктов"),
+            ItemData((700, 400), (90, 60), get_res("item_plate_pic"), 3, "Тарелка разукрашенная")
+        )
         
-        scene_data = GameFrame.GameFrameData((0, 0, 0), get_res("scene_field_background_pic"), (300, 200))
+        scene_data = GameFrame.GameFrameData((0, 0, 0), get_res("scene_field_background_pic"), (300, 200), items_data)
         self.app.reload_frame(GameFrame.GameFrame(scene_data))
 
     def exit(self):
@@ -42,11 +48,11 @@ class MenuFrame(NonGameFrame):
         Button(("center", 90 + 300), (250, 70), "настройки", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_settings, self.buttons_group)
         Button(("center", 170 + 300), (250, 70), "выйти", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.exit, self.buttons_group)
 
-        Label(("center", 150), "рыба", True, 26, self.buttons_group)
+        Label(("center", 150), "рыба", True, 26, (255, 255, 255), self.buttons_group)
 
         Selector((0, 0), (150, 120), Settings.lang_options, SelectorDesignParams(selector_pic_top, selector_pic_middle, selector_pic_bottom, btn_click_snd),self.change_localization, self.buttons_group)
 
-        self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.background, self.buttons_group)
+        #self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.buttons_group)
         if Settings.menu_first_time:
             self.helper.set_phrases(Config.helper_greeting_phrases)
             self.helper.say()
