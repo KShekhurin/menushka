@@ -28,7 +28,7 @@ class App:
         self.run = True
 
         pygame.mouse.set_visible(False)
-        self.pointer = Pointer(pygame.mouse.get_pos(), (40, 60), get_res("pointer_hand_pic"))
+        self.pointer = Pointer(pygame.mouse.get_pos(), (40, 60))
 
         self.loaded_frame.post_init(self)
 

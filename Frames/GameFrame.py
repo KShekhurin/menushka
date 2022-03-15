@@ -1,6 +1,7 @@
 from Frames.Frames import *
 from Player import Player
 from Item import *
+from Pointer import PointerState
 
 class GameFrameData:
     def __init__(self, background_color, background_pic, player_pos, items_data):
@@ -38,9 +39,11 @@ class GameFrame(Frame):
 
     def show_tip(self, tip):
         self.tip_label.text = tip
+        self.app.pointer.set_state(PointerState.PICKUP)
 
     def clear_tip(self):
         self.tip_label.text = ""
+        self.app.pointer.set_state(PointerState.DEFAULT)
 
     def post_init(self, app):
         super().post_init(app)
