@@ -1,6 +1,7 @@
 from sre_constants import SRE_FLAG_ASCII
 import pygame
 from Utils.Assets import get_res
+import Utils.Settings as Settings
 import math
 
 class Player(pygame.sprite.Sprite):
@@ -10,7 +11,7 @@ class Player(pygame.sprite.Sprite):
         self.x, self.y = pos
         self.w, self.h = size
 
-        self.speed = 0.777
+        self.speed = 0.09
         self.is_moving = False
         self.foot_x, self.foot_y = self.x + self.w//2, self.y + self.h
 
@@ -25,7 +26,7 @@ class Player(pygame.sprite.Sprite):
     def draw(self):
         self.image.blit(self.default_pic, (0, 0))
 
-    def update(self, *events):
+    def update(self, events):
         if self.is_moving:
             self.__smoothly_move()
 
@@ -38,11 +39,11 @@ class Player(pygame.sprite.Sprite):
 
     def __smoothly_move(self):
         movement = self.destination - self.pos
-        if movement.length() < self.speed:
+        if movement.length() < self.speed * Settings.dt:
             self.pos = self.destination
         elif movement.length() != 0:
             movement.normalize_ip()
-            movement *= self.speed
+            movement *= self.speed * Settings.dt
             self.pos += movement
         
         if movement.length() != 0:

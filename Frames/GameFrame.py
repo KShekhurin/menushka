@@ -33,7 +33,7 @@ class GameFrame(Frame):
                     else:
                         self.player.move_to(pygame.Vector2(event.pos))
 
-        super().update(*events)
+        super().update(events)
 
     def show_tip(self, tip):
         self.tip_label.text = tip
@@ -49,7 +49,7 @@ class GameFrame(Frame):
         self.item_group = pygame.sprite.Group()
 
         self.player = Player(self.data.player_pos, (200, 200), self.game_group)
-        self.tip_label = Label(("center", 560), "", False, 18, (255,216,0), self.game_group)
+        self.tip_label = Label(("center", 560), "", False, 22, (255,216,0), (0, 0, 0), 2, self.game_group)
         
         for item_data in self.data.items_data:
            self.items.append(Item(item_data, self.show_tip, self.clear_tip, self.item_group)) 

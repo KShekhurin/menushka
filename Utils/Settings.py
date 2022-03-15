@@ -1,3 +1,5 @@
+dt = 0
+
 sound_volume = 1.0
 music_volume = 0.1
 lang_options = ("русский", "китайский", "латинский")

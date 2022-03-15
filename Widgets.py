@@ -93,7 +93,7 @@ class Button(pygame.sprite.Sprite):
 
 
 class Label(pygame.sprite.Sprite):
-    def __init__(self, pos, text, isLocal=True, font_size=26, color=(255, 255, 255), *groups) -> None:
+    def __init__(self, pos, text, isLocal=True, font_size=26, color=(255, 255, 255), outline_color=(0,0,0), outline_w=0, *groups) -> None:
         super().__init__(*groups)
 
         self.text = text
@@ -101,14 +101,21 @@ class Label(pygame.sprite.Sprite):
         self.font = pygame.font.Font("Cyberbit.ttf", font_size)
         self.isLocal = isLocal
         self.color = color
+        self.outline_color = outline_color
+        self.outline_w = outline_w
 
         self.x, self.y = pos
 
         self.rect = pygame.rect.Rect((0, 0), (0, 0))
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
+
+        self._circle_cache = {}
     
     def draw(self):
-        rendered_text = self.font.render(Config.current_local[self.text] if self.isLocal else self.text, True, self.color)
+        if self.outline_w == 0:
+            rendered_text = self.font.render(Config.current_local[self.text] if self.isLocal else self.text, True, self.color)
+        else:
+            rendered_text = self.render(Config.current_local[self.text] if self.isLocal else self.text, self.font, self.color, self.outline_color, self.outline_w)
 
         x = self.x if not (self.x == "center") else Config.screen_width/2 - rendered_text.get_width()/2
         y = self.y if not (self.y == "center") else Config.screen_height/2 - rendered_text.get_height()/2
@@ -123,6 +130,46 @@ class Label(pygame.sprite.Sprite):
     
     def update(self, *events):
         self.draw()
+
+    # Я не знаю, как это работает, но это нужно для обводки текста
+
+    def render(self, text, font, gfcolor=pygame.Color('dodgerblue'), ocolor=(255, 255, 255), opx=0):
+        textsurface = font.render(text, True, gfcolor).convert_alpha()
+        w = textsurface.get_width() + 2 * opx
+        h = font.get_height()
+
+        osurf = pygame.Surface((w, h + 2 * opx)).convert_alpha()
+        osurf.fill((0, 0, 0, 0))
+
+        surf = osurf.copy()
+
+        osurf.blit(font.render(text, True, ocolor).convert_alpha(), (0, 0))
+
+        for dx, dy in self._circlepoints(opx):
+            surf.blit(osurf, (dx + opx, dy + opx))
+
+        surf.blit(textsurface, (opx, opx))
+        return surf
+
+    def _circlepoints(self, r):
+        r = int(round(r))
+        if r in self._circle_cache:
+            return self._circle_cache[r]
+        x, y, e = r, 0, 1 - r
+        self._circle_cache[r] = points = []
+        while x >= y:
+            points.append((x, y))
+            y += 1
+            if e < 0:
+                e += 2 * y - 1
+            else:
+                x -= 1
+                e += 2 * (y - x) - 1
+        points += [(y, x) for x, y in points if x > y]
+        points += [(-x, y) for x, y in points if x]
+        points += [(x, -y) for x, y in points if y]
+        points.sort()
+        return points
 
 
 class Slider(pygame.sprite.Sprite):
@@ -166,7 +213,7 @@ class Slider(pygame.sprite.Sprite):
         #)
         self.image.blit(self.circle_img, ((self.w - self.h) * self.level, 0))
     
-    def update(self, *events):
+    def update(self, events):
         mouse_pos = pygame.mouse.get_pos()
         #Омега лютый костыль, я испытываю праведный стыд каждый раз, когда вижу это.
         mouse_pos = (mouse_pos[0] - self.rel_x, mouse_pos[1] - self.rel_y)
@@ -212,7 +259,7 @@ class SliderWithValue(pygame.sprite.Sprite):
 
         self.inner_group = pygame.sprite.Group()
         self.slider = Slider((0, 0), pos, slider_size, level, background, line_img, circle_img, self.level_changed, self.inner_group)
-        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, 26, (255, 255, 255), self.inner_group)
+        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, 26, (255, 255, 255), (0, 0, 0), 0, self.inner_group)
 
         self.rect = pygame.rect.Rect(pos, (self.slider.rect.width + self.label.rect.width + 10, self.slider.rect.height))
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
@@ -240,7 +287,7 @@ class SliderWithValue(pygame.sprite.Sprite):
         self.inner_group.draw(self.image)
     
     def update(self, *events):
-        self.inner_group.update(*events)
+        self.inner_group.update(events)
         
         self.draw()
 
@@ -371,7 +418,7 @@ class Selector(pygame.sprite.Sprite):
             self.inner_group.draw(self.image)
 
     def update(self, *events):
-        self.inner_group.update(*events)
+        self.inner_group.update(events)
 
         mouse_pos = pygame.mouse.get_pos()
 

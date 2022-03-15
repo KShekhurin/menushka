@@ -50,11 +50,11 @@ class SettingsFrame(NonGameFrame):
         btn_hover_snd = get_res("menu_button_hover_snd")
         btn_click_snd = get_res("menu_button_click_snd")
 
-        Label(("center", 40), "настройки", True, 36, self.buttons_group)
+        Label(("center", 40), "настройки", True, 36, (255, 255, 255), (0, 0, 0), 1, self.buttons_group)
 
-        Label((175, 120), "громкость_звуков", True, 22, (255, 255, 255), self.buttons_group)
+        Label((175, 120), "громкость_звуков", True, 22, (255, 255, 255), (0, 0, 0), 1, self.buttons_group)
         self.sound_volume_slider = SliderWithValue((380, 110), (255, 70), self.sound_volume, self.background, slider_line_img, slider_circle_img, self.update_sound_volume, self.buttons_group)
-        Label((175, 230), "громкость_музыки", True, 22, (255, 255, 255), self.buttons_group)
+        Label((175, 230), "громкость_музыки", True, 22, (255, 255, 255), (0, 0, 0), 1, self.buttons_group)
         self.music_volume_slider = SliderWithValue((380, 220), (255, 70), self.music_volume, self.background, slider_line_img, slider_circle_img, self.update_music_volume, self.buttons_group)
 
         Button(("center", 340), (300, 70), "сохранить_изменения", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd, 22), self.save_changes, self.buttons_group)

@@ -25,7 +25,7 @@ class MenuFrame(NonGameFrame):
             ItemData((700, 400), (90, 60), get_res("item_plate_pic"), 3, "Тарелка разукрашенная")
         )
         
-        scene_data = GameFrame.GameFrameData((0, 0, 0), get_res("scene_field_background_pic"), (300, 200), items_data)
+        scene_data = GameFrame.GameFrameData((0, 0, 0), get_res("scene_field_background_pic"), (300, 300), items_data)
         self.app.reload_frame(GameFrame.GameFrame(scene_data))
 
     def exit(self):
@@ -48,7 +48,7 @@ class MenuFrame(NonGameFrame):
         Button(("center", 90 + 300), (250, 70), "настройки", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_settings, self.buttons_group)
         Button(("center", 170 + 300), (250, 70), "выйти", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.exit, self.buttons_group)
 
-        Label(("center", 150), "рыба", True, 26, (255, 255, 255), self.buttons_group)
+        Label(("center", 150), "рыба", True, 26, (255, 255, 255), (0, 0, 0), 1, self.buttons_group)
 
         Selector((0, 0), (150, 120), Settings.lang_options, SelectorDesignParams(selector_pic_top, selector_pic_middle, selector_pic_bottom, btn_click_snd),self.change_localization, self.buttons_group)
 

@@ -46,7 +46,7 @@ class Item(pygame.sprite.Sprite):
         mask_outline = mask.outline()
         pygame.draw.lines(self.image, (0, 0, 0), True, mask_outline, self.data.stroke_width)
 
-    def update(self, *events):
+    def update(self, events):
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos) and not self.focused:
             self.focused = True

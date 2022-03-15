@@ -17,6 +17,7 @@ class Frame:
         self.helper_group = pygame.sprite.Group()
 
         self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.helper_group)
+        self.fps_label = Label((700, 0), "FPS: " + str(int(self.app.clock.get_fps())), False, 30, (255, 255, 255), (0, 0, 0), 1, self.helper_group)
         self.append_widget(self.helper_group)
 
     def append_widget(self, widget):
@@ -31,9 +32,13 @@ class Frame:
         for updatable in self.updatable:
             updatable.update(events)
 
+        self.fps_label.text = "FPS: " + str(int(self.app.clock.get_fps()))
+
     def draw(self, screen):
         for drawable in self.drawable:
             drawable.draw(screen)
+
+        self.helper_group.draw(screen)
 
     def is_non_game_frame(self):
         return False
@@ -96,10 +101,10 @@ class NonGameFrame(Frame):
             
         Settings.lang_options = options
 
-    def update(self, *events):
-        super().update(*events)
+    def update(self, events):
+        super().update(events)
 
-        for event in events[0]:
+        for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.helper.rect.collidepoint(event.pos) and event.button == 1:
                     self.helper.humble()

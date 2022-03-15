@@ -10,11 +10,14 @@ class App:
     def __init__(self, loaded_frame: Frame, start_size=(200, 200)):
         self.start_size = start_size
         self.loaded_frame = loaded_frame
+        self.clock = None
 
     def start(self):
         pygame.init()
         pygame.font.init()
         pygame.mixer.init()
+
+        self.clock = pygame.time.Clock()
 
         pygame.mixer.music.load('music/славяне.mp3')
         pygame.mixer.music.play(100)
@@ -30,6 +33,9 @@ class App:
         self.loaded_frame.post_init(self)
 
         while self.run:
+            dt = self.clock.tick(60)
+            Settings.dt = dt
+
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:

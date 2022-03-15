@@ -24,7 +24,7 @@ resources = {
 
     "player_default_pic": [None, "pics/гг.png"],
 
-    "scene_field_background_pic": [None, "pics/1 сцена.jpg"],
+    "scene_field_background_pic": [None, "pics/2 сцена.jpg"],
 
     "item_plate_pic": [None, "pics/тарелка.png"]
 }
