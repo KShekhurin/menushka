@@ -32,12 +32,12 @@ class GameFrame(Frame):
                         pass
                     else:
                         self.player.move_to(pygame.Vector2(event.pos))
+                        print(event.pos)
 
         super().update(events)
 
     def show_tip(self, tip):
         self.tip_label.text = tip
-        print(tip)
 
     def clear_tip(self):
         self.tip_label.text = ""

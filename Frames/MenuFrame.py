@@ -21,8 +21,8 @@ class MenuFrame(NonGameFrame):
         self.helper.quit_threads()
 
         items_data = (
-            ItemData((150, 70), (80, 80), get_res("menu_slider_circle_pic"), 2, "Мандарин - царь фруктов"),
-            ItemData((700, 400), (90, 60), get_res("item_plate_pic"), 3, "Тарелка разукрашенная")
+            ItemData((562, 319), (80, 80), get_res("menu_slider_circle_pic"), 2, "Мандарин - царь фруктов"),
+            ItemData((405, 300), (90, 60), get_res("item_plate_pic"), 2, "Тарелка разукрашенная")
         )
         
         scene_data = GameFrame.GameFrameData((0, 0, 0), get_res("scene_field_background_pic"), (300, 300), items_data)
