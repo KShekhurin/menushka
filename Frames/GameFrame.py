@@ -64,6 +64,8 @@ class GameFrame(Frame):
     def add_item_to_inventory(self):
         self.active_item.delete()
         self.active_item = None
+        self.app.pointer.set_state(PointerState.DEFAULT)
+        self.clear_tip()
 
     def post_init(self, app):
         super().post_init(app)
