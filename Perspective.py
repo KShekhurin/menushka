@@ -2,29 +2,31 @@ class Perspective:
     def __init__(self):
         pass
 
-    def get_scalar_by_cord(self, pos):
+    def get_scale_by_cord(self, pos):
         pass
 
-    def pos_in_persective(self, pos):
+    def is_pos_in_perspective(self, pos):
         pass
 
-class WidePerspective(Perspective):
-    def __init__(self, bottom, top, length):
+class RectPerspective(Perspective):
+    def __init__(self, bottom, top, left, right):
         super().__init__()
         self.bottom, self.top = bottom, top
-        self.length = length
+        self.left, self.right = left, right
+        self.length = self.right - self.left
         
-    def get_scalar_by_cord(self, pos):
-        super().get_scalar_by_cord(pos)
+    def get_scale_by_cord(self, pos):
+        super().get_scale_by_cord(pos)
         
-        scale_factor = 1 - abs(self.top - pos[1]) / self.length
+        scale_factor = 1 - abs(pos[1] - self.top) / self.length
+        #scale_factor = 1
         
         return scale_factor
 
-    def pos_in_perspective(self, pos):
-        super().pos_in_perspective(pos)
+    def is_pos_in_perspective(self, pos):
+        super().is_pos_in_perspective(pos)
 
-        return self.top > pos[1] > self.bottom
+        return (self.top <= pos[1] <= self.bottom) and (self.right >= pos[0] >= self.left)
         
 
 class TrapezoidPerspective(Perspective):

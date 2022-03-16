@@ -6,13 +6,15 @@ from Widgets import PictureButton
 import Frames.MenuFrame as MenuFrame
 
 class GameFrameData:
-    def __init__(self, background_color, background_pic, player_pos, items_data):
+    def __init__(self, background_color, background_pic, player_pos, perspective, items_data):
         self.background_color = background_color
         self.background_pic = background_pic
         self.background_pic = pygame.transform.scale(background_pic, (Config.screen_width, Config.screen_height))
         self.player_pos = player_pos
         
         self.items_data = items_data
+
+        self.perspective = perspective
 
 class GameFrame(Frame):
     def __init__(self, data: GameFrameData):
@@ -31,11 +33,12 @@ class GameFrame(Frame):
         for event in events[0]:
             if event.type == pygame.MOUSEBUTTONDOWN: # this is mouse button click
                 if event.button == 1:                # this is left mouse click
+                    print(event.pos)
+
                     if self.helper.rect.collidepoint(event.pos):
                         pass
-                    else:
+                    elif self.data.perspective.is_pos_in_perspective(event.pos):
                         self.player.move_to(pygame.Vector2(event.pos))
-                        print(event.pos)
 
         super().update(events)
 
@@ -59,7 +62,7 @@ class GameFrame(Frame):
         self.game_group = pygame.sprite.Group()
         self.item_group = pygame.sprite.Group()
 
-        self.player = Player(self.data.player_pos, (200, 200), self.game_group)
+        self.player = Player(self.data.player_pos, (200, 200), self.data.perspective, self.game_group)
         self.tip_label = Label(("center", 560), "", False, 22, (255,216,0), (0, 0, 0), 2, self.game_group)
         
         for item_data in self.data.items_data:

@@ -2,6 +2,7 @@ from Frames.Frames import *
 import Frames.SettingsFrame as SettingsFrame
 import Frames.GameFrame as GameFrame
 from Item import ItemData
+from Perspective import *
 
 class MenuFrame(NonGameFrame):
     def __init__(self):
@@ -25,7 +26,8 @@ class MenuFrame(NonGameFrame):
             ItemData((405, 300), (90, 60), get_res("item_plate_pic"), 2, "Тарелка разукрашенная")
         )
         
-        scene_data = GameFrame.GameFrameData((0, 0, 0), get_res("scene_field_background_pic"), (300, 300), items_data)
+        scene_data = GameFrame.GameFrameData((0, 0, 0), get_res("scene_field_background_pic"), (300, 300), RectPerspective(Config.screen_height, 459, 300, 530), items_data)
+        #scene_data = GameFrame.GameFrameData((0, 0, 0), get_res("scene_field_background_pic"), (300, 300), None, items_data)
         self.app.reload_frame(GameFrame.GameFrame(scene_data))
 
     def exit(self):
