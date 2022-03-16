@@ -6,26 +6,31 @@ import Utils.Settings as Settings
 import math
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, size, perspective, *groups):
+    def __init__(self, foot_pos, size, perspective, on_pickup, *groups):
         super().__init__(*groups)
 
-        self.x, self.y = pos
+        self.foot_x, self.foot_y = foot_pos
         self.w, self.h = size
 
         self.speed = 0.09
         self.is_moving = False
-        self.foot_x, self.foot_y = self.x + self.w//2, self.y + self.h
+        self.x, self.y = self.foot_x - self.w//2, self.foot_y - self.h
 
         self.foot_pos = pygame.Vector2(self.foot_x, self.foot_y)
         self.destination = pygame.Vector2(0, 0)
 
         self.default_pic = pygame.transform.scale(get_res("player_default_pic"), size)
 
-        self.rect = pygame.rect.Rect(pos, size)
+        self.rect = pygame.rect.Rect((self.x, self.y), size)
         self.image = pygame.Surface(size, pygame.SRCALPHA, 32)
 
         self.perspective = perspective
-        self.scale = 1.0
+        self.scale = self.perspective.get_scale_by_cord(foot_pos)
+
+        self.move_callback = None
+        self.on_pickup = on_pickup
+
+        self.pickup_snd = get_res("player_pickup_snd")
 
     def draw(self):
         self.image.blit(self.default_pic, (0, 0))
@@ -38,10 +43,17 @@ class Player(pygame.sprite.Sprite):
 
         self.draw()
 
-    def move_to(self, destination: pygame.Vector2):
-        if self.foot_pos - destination != 0:
+    def move_to(self, destination: pygame.Vector2, callback=None):
+        if round((self.foot_pos - destination).length(), 0) != 0:
             self.destination = destination
             self.is_moving = True
+            self.move_callback = callback
+        elif callback is not None:
+            callback()
+
+    def pickup_item(self):
+        self.pickup_snd.play()
+        self.on_pickup()
 
     def __smoothly_move(self):
         speed = self.speed * Settings.dt * self.scale
@@ -56,12 +68,16 @@ class Player(pygame.sprite.Sprite):
             movement *= speed
             self.foot_pos += movement
             self.x += movement.x
-            self.y += movement.y
+            self.y += movement.y * self.scale**4
         
-        if movement.length() != 0:
+        #print(movement.length())
+        if round((self.foot_pos - self.destination).length(), 0) != 0:
             self.rect.midbottom = list(int(v) for v in self.foot_pos)
         else:
             self.is_moving = False
+            if self.move_callback is not None:
+                self.move_callback()
+                self.move_callback = None
 
     def __scale(self):
         self.scale = self.perspective.get_scale_by_cord(self.foot_pos)

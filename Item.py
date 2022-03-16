@@ -1,17 +1,17 @@
 import pygame
 
 class ItemData:
-    def __init__(self, pos, size, default_pic, stroke_width, tip):
+    def __init__(self, pos, size, default_pic, player_pos, tip):
         self.x, self.y = pos
         self.w, self.h = size
 
-        self.default_pic = pygame.transform.scale(default_pic, (self.w - 2 * stroke_width, self.h - 2 * stroke_width))
-        self.stroke_width = stroke_width
+        self.default_pic = pygame.transform.scale(default_pic, (self.w, self.h))
+        self.player_pos = player_pos
         
         self.tip = tip
 
 class Item(pygame.sprite.Sprite):
-    def __init__(self, item_data, on_focuse, on_lose_focuse, *groups):
+    def __init__(self, item_data, on_focuse, on_lose_focuse, on_left_click, on_right_click, *groups):
         super().__init__(*groups)
 
         self.data = item_data
@@ -21,8 +21,11 @@ class Item(pygame.sprite.Sprite):
 
         self.on_focuse = on_focuse
         self.on_lose_focuse = on_lose_focuse
+        self.on_left_click = on_left_click
+        self.on_right_click = on_right_click
 
         self.focused = False
+        self.selected = False
 
     def draw(self):
 
@@ -30,12 +33,14 @@ class Item(pygame.sprite.Sprite):
 
         self.image.blit(self.data.default_pic, (0, 0))
         if self.focused:
-            self.__draw_stroke()
+            self.__draw_stroke(2)
+        else:
+            self.__draw_stroke(1)
 
-    def __draw_stroke(self):
+    def __draw_stroke(self, stroke_width):
         mask = pygame.mask.from_surface(self.data.default_pic)
         mask_outline = mask.outline()
-        pygame.draw.lines(self.image, (0, 0, 0), True, mask_outline, self.data.stroke_width)
+        pygame.draw.lines(self.image, (0, 0, 0), True, mask_outline, stroke_width)
 
     def update(self, events):
         mouse_pos = pygame.mouse.get_pos()
@@ -46,4 +51,16 @@ class Item(pygame.sprite.Sprite):
             self.focused = False
             self.on_lose_focuse()
 
+        for event in events[0]:
+            if event.type == pygame.MOUSEBUTTONDOWN and not self.selected and self.focused:
+                self.selected = True
+                if event.button == 1:
+                    self.on_left_click(self, self.data.player_pos)
+
+            if event.type == pygame.MOUSEBUTTONUP and self.selected:
+                self.selected = False
+
         self.draw()
+
+    def delete(self):
+        self.kill()

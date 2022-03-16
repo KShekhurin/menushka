@@ -22,6 +22,7 @@ class GameFrame(Frame):
 
         self.data = data
         self.items = []
+        self.active_item = None
 
     def draw(self, screen):
         screen.fill(self.data.background_color)
@@ -56,17 +57,25 @@ class GameFrame(Frame):
 
         self.app.reload_frame(MenuFrame.MenuFrame())
 
+    def pickup_item(self, item, player_pos):
+        self.player.move_to(pygame.Vector2(player_pos), self.player.pickup_item)
+        self.active_item = item
+
+    def add_item_to_inventory(self):
+        self.active_item.delete()
+        self.active_item = None
+
     def post_init(self, app):
         super().post_init(app)
 
         self.game_group = pygame.sprite.Group()
         self.item_group = pygame.sprite.Group()
 
-        self.player = Player(self.data.player_pos, (300, 300), self.data.perspective, self.game_group)
+        self.player = Player(self.data.player_pos, (300, 300), self.data.perspective, self.add_item_to_inventory, self.game_group)
         self.tip_label = Label(("center", 560), "", False, 22, (255,216,0), (0, 0, 0), 2, self.game_group)
         
         for item_data in self.data.items_data:
-           self.items.append(Item(item_data, self.show_tip, self.clear_tip, self.item_group)) 
+           self.items.append(Item(item_data, self.show_tip, self.clear_tip, self.pickup_item, None, self.item_group)) 
 
         self.inventory_btn = PictureButton((10, 10), (60, 70), "scene_open_inventory_btn_def_pic", "scene_open_inventory_btn_hover_pic", "Открыть инвентарь", None, self.show_tip, self.clear_tip, self.game_group)
         self.save_btn = PictureButton((90, 10), (60, 70), "scene_save_btn_def_pic", "scene_save_btn_hover_pic", "Сохраниться", self.goto_menu, self.show_tip, self.clear_tip, self.game_group)
