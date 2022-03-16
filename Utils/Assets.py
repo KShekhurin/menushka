@@ -27,6 +27,8 @@ resources = {
     
     "player_pickup_snd": [None, "snd/арфа радость.wav"],
 
+    "inventory_background_pic": [None, "pics/онотоле.png"],
+
     "scene_open_inventory_btn_def_pic": [None, "pics/мешок закрытый.png"],
     "scene_open_inventory_btn_hover_pic": [None, "pics/мешок открытый.png"],
     "scene_save_btn_def_pic": [None, "pics/береста свернулась.png"],

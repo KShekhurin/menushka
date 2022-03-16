@@ -1,4 +1,5 @@
 from Frames.Frames import *
+from Inventory import Inventory
 from Player import Player
 from Item import *
 from Pointer import PointerState
@@ -24,9 +25,13 @@ class GameFrame(Frame):
         self.items = []
         self.active_item = None
 
+        self.is_controlable = True
+
     def draw(self, screen):
+
         screen.fill(self.data.background_color)
         screen.blit(self.data.background_pic, (0, 0))
+        self.item_group.draw(screen)
 
         super().draw(screen)
 
@@ -38,8 +43,14 @@ class GameFrame(Frame):
 
                     if self.helper.rect.collidepoint(event.pos):
                         pass
-                    elif self.data.perspective.is_pos_in_perspective(event.pos):
+                    elif self.data.perspective.is_pos_in_perspective(event.pos) and self.is_controlable:
                         self.player.move_to(pygame.Vector2(event.pos))
+                    elif not self.is_controlable and not self.inventory.is_focused():
+                        self.inventory.close_inv()
+                        self.is_controlable = True
+
+        if self.is_controlable:
+            self.item_group.update(events)
 
         super().update(events)
 
@@ -58,10 +69,17 @@ class GameFrame(Frame):
         self.app.reload_frame(MenuFrame.MenuFrame())
 
     def pickup_item(self, item, player_pos):
-        self.player.move_to(pygame.Vector2(player_pos), self.player.pickup_item)
-        self.active_item = item
+        if self.is_controlable:
+            self.player.move_to(pygame.Vector2(player_pos), self.player.pickup_item)
+            self.active_item = item
+
+    def open_inventory(self):
+        if self.is_controlable:
+            self.inventory.open()
+            self.is_controlable = False
 
     def add_item_to_inventory(self):
+        self.inventory.put_item(self.active_item)
         self.active_item.delete()
         self.active_item = None
         self.app.pointer.set_state(PointerState.DEFAULT)
@@ -79,7 +97,9 @@ class GameFrame(Frame):
         for item_data in self.data.items_data:
            self.items.append(Item(item_data, self.show_tip, self.clear_tip, self.pickup_item, None, self.item_group)) 
 
-        self.inventory_btn = PictureButton((10, 10), (60, 70), "scene_open_inventory_btn_def_pic", "scene_open_inventory_btn_hover_pic", "Открыть инвентарь", None, self.show_tip, self.clear_tip, self.game_group)
+        self.inventory_btn = PictureButton((10, 10), (60, 70), "scene_open_inventory_btn_def_pic", "scene_open_inventory_btn_hover_pic", "Открыть инвентарь", self.open_inventory, self.show_tip, self.clear_tip, self.game_group)
         self.save_btn = PictureButton((90, 10), (60, 70), "scene_save_btn_def_pic", "scene_save_btn_hover_pic", "Сохраниться", self.goto_menu, self.show_tip, self.clear_tip, self.game_group)
 
-        self.append_many_widgets((self.item_group, self.game_group,))
+        self.inventory = Inventory(self.show_tip, self.clear_tip, self.game_group)
+
+        self.append_many_widgets((self.game_group,))

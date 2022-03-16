@@ -15,10 +15,11 @@ class Frame:
     def post_init(self, app):
         self.app = app
         self.helper_group = pygame.sprite.Group()
+        self.fps_group = pygame.sprite.Group()
 
         self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.helper_group)
-        self.fps_label = Label((700, 0), "FPS: " + str(int(self.app.clock.get_fps())), False, 30, (255, 255, 255), (0, 0, 0), 1, self.helper_group)
-        self.append_widget(self.helper_group)
+        self.fps_label = Label((700, 0), "FPS: " + str(int(self.app.clock.get_fps())), False, 30, (255, 255, 255), (0, 0, 0), 1, self.fps_group)
+        self.append_many_widgets((self.helper_group, self.fps_group))
 
     def append_widget(self, widget):
         self.drawable.append(widget)
@@ -38,7 +39,7 @@ class Frame:
         for drawable in self.drawable:
             drawable.draw(screen)
 
-        self.helper_group.draw(screen)
+        self.fps_group.draw(screen)
 
     def is_non_game_frame(self):
         return False

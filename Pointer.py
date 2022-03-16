@@ -28,4 +28,4 @@ class Pointer():
         self.x, self.y = new_pos
 
     def draw(self, screen):
-        screen.blit(self.state_pics[self.state], (self.x - 10, self.y - 10))
+        screen.blit(self.state_pics[self.state], (self.x, self.y))
