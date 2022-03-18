@@ -1,8 +1,16 @@
+import Utils.Assets as Assets
+import Perspective
+
 local_rus = {
     "": "",
     "новая_игра": "Новая игра",
     "настройки": "Настройки",
     "выйти": "Выйти",
+    "продолжить": "Продолжить",
+    "сохраниться": "Сохраниться",
+    "сохранить_игру": "Сохранить игру",
+    "загрузить": "Загрузить",
+    "загрузить_игру": "Загрузить игру",
     "рыба": "Съешь ещё больше этих сладких французских булок.",
     "громкость_звуков": "Громкость звуков: ",
     "громкость_музыки": "Громкость музыки: ",
@@ -37,6 +45,11 @@ local_chi = {
     "новая_игра": "新游戏",
     "настройки": "设置",
     "выйти": "出去",
+    "продолжить": "继续",
+    "сохраниться": "保存",
+    "сохранить_игру": "保存游戏",
+    "загрузить": "下载",
+    "загрузить_игру": "下载游戏",
     "рыба": "多吃那些甜的法式面包。",
     "громкость_звуков": "音量：",
     "громкость_музыки": "音乐音量：",
@@ -71,6 +84,11 @@ local_lat = {
     "новая_игра": "Novum ludum",
     "настройки": "Occasus",
     "выйти": "Exite",
+    "продолжить": "Perge",
+    "сохраниться": "Salvare",
+    "сохранить_игру": "Salvum ludum",
+    "загрузить": "Download",
+    "загрузить_игру": "Download ludum",
     "рыба": "Plus comedunt ex illis dulcibus paunculis Gallicis.",
     "громкость_звуков": "Sanum volumen:",
     "громкость_музыки": "Volumen Musicum:",
@@ -100,7 +118,6 @@ local_lat = {
     "якуб_прив_11": "click iam tandem Exit!"
 }
 
-current_local = local_rus
 screen_width = 800
 screen_height = 600
 window_title = "Игрушка"
@@ -131,3 +148,26 @@ helper_greeting_phrases = (
 )
 helper_blink_freq = 4000
 helper_motivational_phrase_freq = 10000
+
+current_local = local_rus
+
+items_ids = {
+    "mandarin": ((562, 319), (80, 80), Assets.get_res("menu_slider_circle_pic"), (544, 453), "Мандарин - царь фруктов"),
+    "plate": ((405, 300), (90, 60), Assets.get_res("item_plate_pic"), (398, 450), "Тарелка разукрашенная")
+}
+
+inventory_items_ids = {
+    "mandarin": ((30, 30), Assets.get_res("menu_slider_circle_pic"), "Мандарин - царь фруктов"),
+    "plate": ((40, 30), Assets.get_res("item_plate_pic"), "Тарелка разукрашенная")
+}
+
+items_data = {
+    "summer": (
+            "mandarin",
+            "plate"
+        )
+}
+
+scenes_data = {
+    "summer": ((0, 0, 0), Assets.get_res("scene_field_background_pic"), (500, 600), Perspective.TrapezoidPerspective(screen_height, 440, 50, 750, 185, 615), items_data["summer"])
+}

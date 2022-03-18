@@ -6,6 +6,7 @@ from Helper import Helper
 import Utils.Config as Config
 import Utils.Settings as Settings
 from Utils.Assets import get_res
+import Utils.Saves as Saves
 
 class Frame:
     def __init__(self):
@@ -18,7 +19,7 @@ class Frame:
         self.fps_group = pygame.sprite.Group()
 
         self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.helper_group)
-        self.fps_label = Label((700, 0), "FPS: " + str(int(self.app.clock.get_fps())), False, 30, (255, 255, 255), (0, 0, 0), 1, self.fps_group)
+        self.fps_label = Label((700, 0), "FPS: " + str(int(self.app.clock.get_fps())), False, 30, (Config.screen_width, Config.screen_height), (255, 255, 255), (0, 0, 0), 1, self.fps_group)
         self.append_many_widgets((self.helper_group, self.fps_group))
 
     def append_widget(self, widget):
@@ -101,6 +102,7 @@ class NonGameFrame(Frame):
             pygame.mixer.music.play(100)
             
         Settings.lang_options = options
+        Saves.save_settings()
 
     def update(self, events):
         super().update(events)
@@ -109,6 +111,11 @@ class NonGameFrame(Frame):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.helper.rect.collidepoint(event.pos) and event.button == 1:
                     self.helper.humble()
+
+        is_time_to_motiv = pygame.time.get_ticks() - self.no_action_timer >= Config.helper_motivational_phrase_freq
+        if is_time_to_motiv:
+            self.helper.say_motiv()
+            self.no_action_timer = pygame.time.get_ticks()
 
     def is_non_game_frame(self):
         return True

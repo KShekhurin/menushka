@@ -10,22 +10,24 @@ class Player(pygame.sprite.Sprite):
         super().__init__(*groups)
 
         self.foot_x, self.foot_y = foot_pos
+        self.perspective = perspective
+        self.scale = self.perspective.get_scale_by_cord(foot_pos)
         self.w, self.h = size
 
         self.speed = 0.09
         self.is_moving = False
-        self.x, self.y = self.foot_x - self.w//2, self.foot_y - self.h
+        self.x, self.y = self.foot_x - (self.w*self.scale)//2, self.foot_y - (self.h*self.scale)
 
         self.foot_pos = pygame.Vector2(self.foot_x, self.foot_y)
         self.destination = pygame.Vector2(0, 0)
 
-        self.default_pic = pygame.transform.scale(get_res("player_default_pic"), size)
+        self.default_pic = pygame.transform.scale(get_res("player_default_pic"), (self.w, self.h))
 
-        self.rect = pygame.rect.Rect((self.x, self.y), size)
-        self.image = pygame.Surface(size, pygame.SRCALPHA, 32)
+        self.rect = pygame.rect.Rect((self.foot_x, self.foot_y), (self.w, self.h))
+        self.image = pygame.Surface((self.w, self.h), pygame.SRCALPHA, 32)
 
-        self.perspective = perspective
-        self.scale = self.perspective.get_scale_by_cord(foot_pos)
+        self.__scale()
+
 
         self.move_callback = None
         self.on_pickup = on_pickup
@@ -54,6 +56,9 @@ class Player(pygame.sprite.Sprite):
     def pickup_item(self):
         self.pickup_snd.play()
         self.on_pickup()
+
+    def get_pos(self):
+        return (int(self.foot_x), int(self.foot_y))
 
     def __smoothly_move(self):
         speed = self.speed * Settings.dt * self.scale

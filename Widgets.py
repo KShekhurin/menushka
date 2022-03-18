@@ -1,4 +1,3 @@
-from re import S
 import pygame
 import Utils.Config as Config
 from Utils.Assets import get_res
@@ -150,7 +149,7 @@ class PictureButton(pygame.sprite.Sprite):
         self.draw()
 
 class Label(pygame.sprite.Sprite):
-    def __init__(self, pos, text, isLocal=True, font_size=26, color=(255, 255, 255), outline_color=(0,0,0), outline_w=0, *groups) -> None:
+    def __init__(self, pos, text, isLocal=True, font_size=26, rel_size=(Config.screen_width, Config.screen_height), color=(255, 255, 255), outline_color=(0,0,0), outline_w=0, *groups) -> None:
         super().__init__(*groups)
 
         self.text = text
@@ -160,6 +159,8 @@ class Label(pygame.sprite.Sprite):
         self.color = color
         self.outline_color = outline_color
         self.outline_w = outline_w
+
+        self.rel_w, self.rel_h = rel_size
 
         self.x, self.y = pos
 
@@ -174,8 +175,8 @@ class Label(pygame.sprite.Sprite):
         else:
             rendered_text = self.render(Config.current_local[self.text] if self.isLocal else self.text, self.font, self.color, self.outline_color, self.outline_w)
 
-        x = self.x if not (self.x == "center") else Config.screen_width/2 - rendered_text.get_width()/2
-        y = self.y if not (self.y == "center") else Config.screen_height/2 - rendered_text.get_height()/2
+        x = self.x if not (self.x == "center") else self.rel_w/2 - rendered_text.get_width()/2
+        y = self.y if not (self.y == "center") else self.rel_h/2 - rendered_text.get_height()/2
 
         self.rect = pygame.rect.Rect(
             (x, y), 
@@ -316,7 +317,7 @@ class SliderWithValue(pygame.sprite.Sprite):
 
         self.inner_group = pygame.sprite.Group()
         self.slider = Slider((0, 0), pos, slider_size, level, background, line_img, circle_img, self.level_changed, self.inner_group)
-        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, 26, (255, 255, 255), (0, 0, 0), 0, self.inner_group)
+        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, 26, (Config.screen_width, Config.screen_height), (255, 255, 255), (0, 0, 0), 0, self.inner_group)
 
         self.rect = pygame.rect.Rect(pos, (self.slider.rect.width + self.label.rect.width + 10, self.slider.rect.height))
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
@@ -407,7 +408,7 @@ class SelectorOption(pygame.sprite.Sprite):
 
 class Selector(pygame.sprite.Sprite):
     def __init__(self, pos=(0,0), size=(40,10), options=(), design: SelectorDesignParams=SelectorDesignParams(),
-                 on_selected_change=None, *groups):
+                 on_selected_change=None, on_hover=None, on_hover_lose=None, *groups):
         super().__init__(*groups)
 
         self.x, self.y = pos
@@ -429,6 +430,8 @@ class Selector(pygame.sprite.Sprite):
         self.focused = False
         self.currentOption = options[0] if len(options) > 0 else "пусто"
         self.on_selected_change = on_selected_change
+        self.on_hover = on_hover
+        self.on_hover_lose = on_hover_lose
 
         self.design = design
         self.rect = pygame.rect.Rect(pos, size)
@@ -481,8 +484,12 @@ class Selector(pygame.sprite.Sprite):
 
         if self.rect.collidepoint(mouse_pos):
             self.focused = True
+            if self.on_hover is not None:
+                self.on_hover()
         else:
             self.focused = False
+            if self.on_hover_lose is not None:
+                self.on_hover_lose()
 
         for event in events[0]:
             if event.type == pygame.MOUSEBUTTONDOWN and self.selected:
@@ -500,3 +507,75 @@ class Selector(pygame.sprite.Sprite):
                     self.selected = True
 
         self.draw()
+
+
+class SaveSlot(pygame.sprite.Sprite):
+    def __init__(self, pos, size, pic_size, screenshot_pic, outline_pic, date, on_click, *groups) -> None:
+        super().__init__(*groups)
+
+        self.x, self.y = pos
+        self.w, self.h = size
+        self.pic_size = pic_size
+        self.pic_w, self.pic_h = pic_size
+
+        self.screenshot_pic_data = screenshot_pic
+        self.screenschot_pic = pygame.transform.scale(screenshot_pic, (self.pic_w-16, self.pic_h-16))
+        self.outline_pic = pygame.transform.scale(outline_pic, pic_size)
+        self.date = date
+        self.on_click = on_click
+
+        is_local = True if date == "пусто" else False
+        self.desc_group = pygame.sprite.Group()
+        self.scene_name_label = Label(("center", self.pic_size[1]), date, is_local, 16, (self.w, self.h), (255, 255, 255), (0, 0, 0), 1, self.desc_group)
+
+        self.rect = pygame.rect.Rect(pos, size)
+        self.image = pygame.Surface(size, pygame.SRCALPHA, 32)
+
+        self.active = False
+        self.collided = False
+        self.focused = False
+        self.selected = False
+
+    def draw(self):
+        self.image.fill((0, 0, 0, 0))
+
+        self.image.blit(self.screenschot_pic, (8, 8))
+        self.image.blit(self.outline_pic, (0, 0))
+
+        if self.active or (self.focused and not self.collided):
+            pic_surf = pygame.Surface(self.pic_size, pygame.SRCALPHA, 32)
+            pic_surf.fill((255, 255, 255, 128))
+            self.image.blit(pic_surf, (0, 0))
+
+        self.desc_group.draw(self.image)
+
+    def update(self, *events):
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos) and not self.focused:
+            self.focused = True
+        elif not self.rect.collidepoint(mouse_pos) and self.focused:
+            self.focused = False
+
+        for event in events[0]:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1 and self.focused and not self.selected and not self.collided:
+                    self.selected = True
+                    self.on_click(self)
+            if event.type == pygame.MOUSEBUTTONUP:
+                if self.selected:
+                    self.selected = False
+
+        self.draw()
+        self.desc_group.update(*events)
+
+    def set_collided(self, coll):
+        self.collided = coll
+
+    def set_active(self, act):
+        self.active = act
+
+    def set_screenshot(self, new_screenshot):
+        self.screenschot_pic = new_screenshot
+
+    def is_void(self):
+        return self.screenshot_pic_data == get_res("saves_void_save_pic")

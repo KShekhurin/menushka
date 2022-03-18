@@ -2,8 +2,26 @@ import pygame
 from Utils.Assets import get_res
 from Item import *
 
+class InventoryItem(pygame.sprite.Sprite):
+    def __init__(self, pos, id, *groups):
+        super().__init__(*groups)
+
+        self.id = id
+        self.x, self.y = pos
+        self.size, self.pic, self.tip = Config.inventory_items_ids[id]
+        self.pic = pygame.transform.scale(self.pic, self.size)
+
+        self.rect = pygame.rect.Rect((self.x, self.y), self.size)
+        self.image = pygame.Surface(self.size, pygame.SRCALPHA, 32)
+
+    def draw(self):
+        self.image.blit(self.pic, (0, 0))
+
+    def update(self, *events):
+        self.draw()
+
 class InventorySlot(pygame.sprite.Sprite):
-    def __init__(self, pos, size, on_focus, on_lose_focus, on_click, *groups):
+    def __init__(self, pos, size, item_id, on_focus, on_lose_focus, on_click, *groups):
         super().__init__(*groups)
 
         self.x, self.y = pos
@@ -18,7 +36,11 @@ class InventorySlot(pygame.sprite.Sprite):
 
         self.focused = False
 
-        self.contain = None
+        self.contain_group = pygame.sprite.Group()
+        if item_id is not None:
+            self.contain = InventoryItem((self.w//2 - Config.inventory_items_ids[item_id][0][0]//2, self.h//2 - Config.inventory_items_ids[item_id][0][1]//2), item_id, self.contain_group)
+        else:
+            self.contain = None
 
     def draw(self):
         #print(self.image.get_rect().x)
@@ -30,10 +52,7 @@ class InventorySlot(pygame.sprite.Sprite):
             self.image.fill((0, 0, 0, 0))
 
         if self.contain is not None:
-            pic_size = self.contain.data.default_pic.get_size()
-            scale = 0.6
-            pic = pygame.transform.scale(self.contain.data.default_pic, (pic_size[0] * scale, pic_size[1] * scale))
-            self.image.blit(pic, ((self.w - pic_size[0]*scale)//2, (self.h - pic_size[1]*scale)//2))
+            self.contain_group.draw(self.image)
 
     def update(self, *events):
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -43,22 +62,23 @@ class InventorySlot(pygame.sprite.Sprite):
         if self.rect.collidepoint((mouse_x, mouse_y)) and not self.focused:
             self.focused = True
             if self.on_focus is not None and self.contain is not None:
-                self.on_focus(self.contain.data.tip, False)
+                self.on_focus(self.contain.tip, False)
         elif not self.rect.collidepoint((mouse_x, mouse_y)) and self.focused:
             self.focused = False
             if self.on_lose_focus is not None and self.contain is not None:
                 self.on_lose_focus()
 
         self.draw()
+        self.contain_group.update()
 
-    def put(self, item):
-        self.contain = item
+    def put(self, item_id):
+        self.contain = InventoryItem((self.w//2 - Config.inventory_items_ids[item_id][0][0]//2, self.h//2 - Config.inventory_items_ids[item_id][0][1]//2), item_id, self.contain_group)
 
     def is_empty(self):
         return self.contain is None
 
 class Inventory(pygame.sprite.Sprite):
-    def __init__(self, on_slot_focus, on_slot_lose_focus, *groups):
+    def __init__(self, items_ids, on_slot_focus, on_slot_lose_focus, *groups):
         super().__init__(*groups)
 
         self.pos = (185, 50)
@@ -72,13 +92,18 @@ class Inventory(pygame.sprite.Sprite):
         self.is_opened = False
         self.focused = False
 
+        self.max_len = 2
+
+        _items = [*items_ids] if len(items_ids) > 0 else []
+        for i in range(0, self.max_len-len(items_ids)): _items.append(None)
+
         self.slots_group = pygame.sprite.Group()
         self.slots = (
-            InventorySlot((250-185, 198-50), (315-250, 252-198), on_slot_focus, on_slot_lose_focus, None, self.slots_group),
-            InventorySlot((476-185, 181-50), (538-476, 249-181), on_slot_focus, on_slot_lose_focus, None, self.slots_group),
+            InventorySlot((250-185, 198-50), (315-250, 252-198), _items[0], on_slot_focus, on_slot_lose_focus, None, self.slots_group),
+            InventorySlot((476-185, 181-50), (538-476, 249-181), _items[1], on_slot_focus, on_slot_lose_focus, None, self.slots_group),
         )
 
-        self.full_slots = 0
+        self.full_slots = len(items_ids)
 
     def open(self):
         self.is_opened = True

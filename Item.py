@@ -1,4 +1,5 @@
 import pygame
+import Utils.Config as Config
 
 class ItemData:
     def __init__(self, pos, size, default_pic, player_pos, tip):
@@ -11,10 +12,11 @@ class ItemData:
         self.tip = tip
 
 class Item(pygame.sprite.Sprite):
-    def __init__(self, item_data, on_focuse, on_lose_focuse, on_left_click, on_right_click, *groups):
+    def __init__(self, id, on_focuse, on_lose_focuse, on_left_click, on_right_click, *groups):
         super().__init__(*groups)
 
-        self.data = item_data
+        self.id = id
+        self.data = ItemData(*Config.items_ids[id])
 
         self.rect = pygame.rect.Rect((self.data.x, self.data.y), (self.data.w, self.data.h))
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)

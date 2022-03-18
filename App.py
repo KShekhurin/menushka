@@ -5,6 +5,7 @@ from Pointer import Pointer
 from Utils.Assets import get_res
 import Utils.Config as Config
 import Utils.Settings as Settings
+import Utils.Saves as Saves
 
 class App:
     def __init__(self, loaded_frame: Frame, start_size=(200, 200)):
@@ -19,8 +20,14 @@ class App:
 
         self.clock = pygame.time.Clock()
 
-        pygame.mixer.music.load('music/славяне.mp3')
-        pygame.mixer.music.play(100)
+        Saves.load_settings()
+
+        music = ""
+        if Config.current_local == Config.local_rus: music = "music/славяне.mp3"
+        if Config.current_local == Config.local_chi: music = "music/китайцы.mp3"
+        if Config.current_local == Config.local_lat: music = "music/римские.mp3"
+        #pygame.mixer.music.load(music)
+        #pygame.mixer.music.play(100)
         pygame.mixer.music.set_volume(Settings.music_volume)
         
         self.screen = pygame.display.set_mode(self.start_size)

@@ -39,8 +39,8 @@ class Helper(pygame.sprite.Sprite):
         self.motiv_phrases = Config.helper_motivational_phrases
         self.motiv_timer = pygame.time.get_ticks()
 
-        self.rect = pygame.rect.Rect(self.x, self.y - self.cloud_h+20, self.w, self.h + self.cloud_h-20)
-        self.image = pygame.Surface((self.w, self.h + self.cloud_h-20), pygame.SRCALPHA, 32)
+        self.rect = pygame.rect.Rect(self.x, self.y, self.w, self.h)
+        self.image = pygame.Surface((self.w, self.h), pygame.SRCALPHA, 32)
 
     def blink(self, duration=0.25):
         self.pic_current = self.pic_blink
@@ -55,6 +55,9 @@ class Helper(pygame.sprite.Sprite):
         self.blink_timer = pygame.time.get_ticks()
 
     def say(self, phrase=""):
+        self.rect = pygame.rect.Rect(self.x, self.y - self.cloud_h+20, self.w, self.h + self.cloud_h-20)
+        self.image = pygame.Surface((self.w, self.h + self.cloud_h-20), pygame.SRCALPHA, 32)
+
         self.pic_current = self.pic_speak
         self.showingCloud = True
         self.isSpeaking = True
@@ -86,6 +89,8 @@ class Helper(pygame.sprite.Sprite):
         self.showingCloud = False
 
     def stop_saying(self):
+        self.rect = pygame.rect.Rect(self.x, self.y, self.w, self.h)
+        self.image = pygame.Surface((self.w, self.h), pygame.SRCALPHA, 32)
         self.pic_current = self.pic_default
         self.showingCloud = False
         self.isSpeaking = False
@@ -121,7 +126,10 @@ class Helper(pygame.sprite.Sprite):
     def draw(self):
         self.image.fill((0, 0, 0, 0))
 
-        self.image.blit(self.pic_current, (0, self.cloud_h-20))
+        if self.isSpeaking:
+            self.image.blit(self.pic_current, (0, self.cloud_h-20))
+        else:
+            self.image.blit(self.pic_current, (0, 0))
 
         if self.showingCloud:
             self.image.blit(self.pic_cloud, (0, 0))
