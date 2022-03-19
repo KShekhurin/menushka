@@ -1,4 +1,3 @@
-import Utils.Assets as Assets
 import Perspective
 
 local_rus = {
@@ -151,23 +150,23 @@ helper_motivational_phrase_freq = 10000
 
 current_local = local_rus
 
-items_ids = {
-    "mandarin": ((562, 319), (80, 80), Assets.get_res("menu_slider_circle_pic"), (544, 453), "Мандарин - царь фруктов"),
-    "plate": ((405, 300), (90, 60), Assets.get_res("item_plate_pic"), (398, 450), "Тарелка разукрашенная")
-}
-
-inventory_items_ids = {
-    "mandarin": ((30, 30), Assets.get_res("menu_slider_circle_pic"), "Мандарин - царь фруктов"),
-    "plate": ((40, 30), Assets.get_res("item_plate_pic"), "Тарелка разукрашенная")
-}
-
 items_data = {
+    "mandarin": ((80, 80), "menu_slider_circle_pic", "Мандарин - царь фруктов"),
+    "plate": ((90, 60), "item_plate_pic", "Тарелка разукрашенная")
+}
+
+inventory_items_data = {
+    "mandarin": ((30, 30), "menu_slider_circle_pic", "Мандарин - царь фруктов"),
+    "plate": ((40, 30), "item_plate_pic", "Тарелка разукрашенная")
+}
+
+items_in_location = {
     "summer": (
-            "mandarin",
-            "plate"
-        )
+            ("mandarin", (562, 319), (544, 453)),
+            ("plate", (405, 300), (398, 450))
+    )
 }
 
 scenes_data = {
-    "summer": ((0, 0, 0), Assets.get_res("scene_field_background_pic"), (500, 600), Perspective.TrapezoidPerspective(screen_height, 440, 50, 750, 185, 615), items_data["summer"])
+    "summer": ((0, 0, 0), "scene_field_background_pic", (500, 600), Perspective.TrapezoidPerspective(screen_height, 440, 50, 750, 185, 615), items_in_location["summer"])
 }

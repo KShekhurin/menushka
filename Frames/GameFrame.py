@@ -10,13 +10,13 @@ import Frames.SaveMenuFrame as SaveMenuFrame
 import os
 
 class GameFrameData:
-    def __init__(self, background_color, background_pic, player_pos, perspective, items_data):
+    def __init__(self, background_color, background_pic, player_pos, perspective, items_loc_data):
         self.background_color = background_color
-        self.background_pic = background_pic
-        self.background_pic = pygame.transform.scale(background_pic, (Config.screen_width, Config.screen_height))
+        self.background_pic = get_res(background_pic)
+        self.background_pic = pygame.transform.scale(self.background_pic, (Config.screen_width, Config.screen_height))
         self.player_pos = player_pos
         
-        self.items_data = items_data
+        self.items_data = items_loc_data
 
         self.perspective = perspective
 
@@ -111,6 +111,8 @@ class GameFrame(Frame):
         Settings.player_pos = self.player.get_pos()
         Settings.last_scene_id = self.id
         Settings.inventory_items = self.inventory_items
+        if not os.path.exists("tmp"):
+            os.mkdir("tmp")
         pygame.image.save(self.app.screen, "tmp/screenshot.jpg")
 
     def post_init(self, app):
@@ -124,8 +126,8 @@ class GameFrame(Frame):
         
         for i in range(0, len(self.data.items_data)):
             if Settings.items_pickedup[self.id][i]: continue
-            item_id = self.data.items_data[i]
-            self.items.append(Item(item_id, self.show_tip, self.clear_tip, self.pickup_item, None, self.item_group)) 
+            item_data = self.data.items_data[i]
+            self.items.append(Item(item_data, self.show_tip, self.clear_tip, self.pickup_item, None, self.item_group)) 
 
         self.inventory_btn = PictureButton((10, 10), (60, 70), "scene_open_inventory_btn_def_pic", "scene_open_inventory_btn_hover_pic", "Открыть инвентарь", self.open_inventory, self.show_tip, self.clear_tip, self.game_group)
         self.save_btn = PictureButton((90, 10), (60, 70), "scene_save_btn_def_pic", "scene_save_btn_hover_pic", "Сохраниться", self.goto_saves_menu, self.show_tip, self.clear_tip, self.game_group)

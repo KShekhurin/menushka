@@ -1,5 +1,5 @@
 import json
-from os import close
+import os
 import Utils.Settings as Settings
 import Utils.Config as Config
 
@@ -30,27 +30,39 @@ def load_save(save_num: int):
     Settings.inventory_items = progress["inventory_items"]
 
 def load_settings():
-    f = open("saves/settings.json", "r")
+    if os.path.isfile("saves/settings.json"):
+        f = open("saves/settings.json", "r")
 
-    settings_json = f.read()
-    f.close()
-    settings = json.loads(settings_json)
+        settings_json = f.read()
+        f.close()
+        settings = json.loads(settings_json)
 
-    Config.current_local = settings["current_local"]
-    Settings.music_volume = settings["music_volume"]
-    Settings.sound_volume = settings["sound_volume"]
-    Settings.lang_options = settings["lang_options"]
-    Settings.saves_screenshots = settings["saves_screenshots"]
+        current_local = settings["current_local"]
+        if current_local == "chi": Config.current_local = Config.local_chi
+        elif current_local == "lat": Config.current_local = Config.local_lat
+        else: Config.current_local = Config.local_rus
+        Settings.music_volume = settings["music_volume"]
+        Settings.sound_volume = settings["sound_volume"]
+        Settings.lang_options = settings["lang_options"]
+        Settings.saves = settings["saves"]
 
 def save_settings():
     f = open("saves/settings.json", "w")
 
+    current_local = None
+    if Config.current_local == Config.local_rus:
+        current_local = "rus"
+    elif Config.current_local == Config.local_chi:
+        current_local = "chi"
+    elif Config.current_local == Config.local_lat:
+        current_local = "lat"
+
     settings = {
-        "current_local": Config.current_local,
+        "current_local": current_local,
         "music_volume": Settings.music_volume,
         "sound_volume": Settings.sound_volume,
         "lang_options": Settings.lang_options,
-        "saves_screenshots": Settings.saves_screenshots
+        "saves": Settings.saves
     }
     settings_json = json.dumps(settings)
 

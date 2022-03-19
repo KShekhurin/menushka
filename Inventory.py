@@ -8,7 +8,8 @@ class InventoryItem(pygame.sprite.Sprite):
 
         self.id = id
         self.x, self.y = pos
-        self.size, self.pic, self.tip = Config.inventory_items_ids[id]
+        self.size, self.pic, self.tip = Config.inventory_items_data[id]
+        self.pic = get_res(self.pic)
         self.pic = pygame.transform.scale(self.pic, self.size)
 
         self.rect = pygame.rect.Rect((self.x, self.y), self.size)
@@ -38,7 +39,7 @@ class InventorySlot(pygame.sprite.Sprite):
 
         self.contain_group = pygame.sprite.Group()
         if item_id is not None:
-            self.contain = InventoryItem((self.w//2 - Config.inventory_items_ids[item_id][0][0]//2, self.h//2 - Config.inventory_items_ids[item_id][0][1]//2), item_id, self.contain_group)
+            self.contain = InventoryItem((self.w//2 - Config.inventory_items_data[item_id][0][0]//2, self.h//2 - Config.inventory_items_data[item_id][0][1]//2), item_id, self.contain_group)
         else:
             self.contain = None
 
@@ -72,7 +73,7 @@ class InventorySlot(pygame.sprite.Sprite):
         self.contain_group.update()
 
     def put(self, item_id):
-        self.contain = InventoryItem((self.w//2 - Config.inventory_items_ids[item_id][0][0]//2, self.h//2 - Config.inventory_items_ids[item_id][0][1]//2), item_id, self.contain_group)
+        self.contain = InventoryItem((self.w//2 - Config.inventory_items_data[item_id][0][0]//2, self.h//2 - Config.inventory_items_data[item_id][0][1]//2), item_id, self.contain_group)
 
     def is_empty(self):
         return self.contain is None

@@ -1,22 +1,24 @@
 import pygame
 import Utils.Config as Config
+from Utils.Assets import get_res
 
 class ItemData:
-    def __init__(self, pos, size, default_pic, player_pos, tip):
+    def __init__(self, pos, player_pos, size, default_pic, tip):
         self.x, self.y = pos
         self.w, self.h = size
 
-        self.default_pic = pygame.transform.scale(default_pic, (self.w, self.h))
+        self.default_pic = pygame.transform.scale(get_res(default_pic), (self.w, self.h))
         self.player_pos = player_pos
         
         self.tip = tip
 
 class Item(pygame.sprite.Sprite):
-    def __init__(self, id, on_focuse, on_lose_focuse, on_left_click, on_right_click, *groups):
+    def __init__(self, item_loc_data, on_focuse, on_lose_focuse, on_left_click, on_right_click, *groups):
         super().__init__(*groups)
 
-        self.id = id
-        self.data = ItemData(*Config.items_ids[id])
+        self.id = item_loc_data[0]
+        print(*item_loc_data[1:])
+        self.data = ItemData(*item_loc_data[1:], *Config.items_data[self.id])
 
         self.rect = pygame.rect.Rect((self.data.x, self.data.y), (self.data.w, self.data.h))
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)

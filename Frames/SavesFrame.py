@@ -5,6 +5,7 @@ import Utils.Settings as Settings
 import Utils.Saves as Saves
 import shutil
 from Utils.Assets import get_screenshot
+import datetime
 
 class SavesFrame(NonGameFrame):
     def __init__(self):
@@ -45,10 +46,16 @@ class SavesFrame(NonGameFrame):
             Saves.save_game(slot_index)
 
             screenshot = pygame.transform.scale(get_res("screenshot"), (self.active_slot.pic_w-16, self.active_slot.pic_h-16))
-            self.active_slot.set_screenshot(screenshot)
             screenshot_filename = "screenshots/screenshot_" + str(slot_index) + ".jpg"
             shutil.copy2("tmp/screenshot.jpg", screenshot_filename)
-            Settings.saves_screenshots[slot_index] = screenshot_filename
+
+            date = datetime.datetime.now()
+            date_format = date.strftime("%x %X")
+
+            self.active_slot.set_screenshot(screenshot)
+            self.active_slot.set_date(date_format)
+
+            Settings.saves[str(slot_index)] = [screenshot_filename, date_format]
             Saves.save_settings()
 
             self.active_slot.set_active(False)
@@ -68,8 +75,13 @@ class SavesFrame(NonGameFrame):
         self.save_slots = []
         for i in range(0, 2):
             for j in range(0, 4):
-                screenshot= get_screenshot(Settings.saves_screenshots[j + i * 4]) if Settings.saves_screenshots[j + i * 4] is not None else get_res("saves_void_save_pic")
-                self.save_slots.append(SaveSlot((50 + j*175, 140 + i*130), (165, 120), (165, 100), screenshot, get_res("saves_outline_pic"), "пусто", self.set_active_slot, self.buttons_group))
+                if str(i*4 + j) in Settings.saves.keys():
+                    screenshot = get_screenshot(Settings.saves[str(i*4 + j)][0])
+                    date = Settings.saves[str(i*4 + j)][1]
+                else:
+                    screenshot = get_res("saves_void_save_pic")
+                    date = "пусто"
+                self.save_slots.append(SaveSlot((50 + j*175, 120 + i*140), (150, 130), (150, 110), screenshot, get_res("saves_outline_pic"), date, self.set_active_slot, self.buttons_group))
 
         Button(("center", 420), (300, 70), "сохранить_игру", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd, 22), self.save_game, self.buttons_group)
         Button((575, 525), (200, 50), "вернуться", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_menu, self.buttons_group)

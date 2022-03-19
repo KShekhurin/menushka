@@ -6,6 +6,7 @@ from Utils.Assets import get_res
 import Utils.Config as Config
 import Utils.Settings as Settings
 import Utils.Saves as Saves
+import os
 
 class App:
     def __init__(self, loaded_frame: Frame, start_size=(200, 200)):
@@ -66,6 +67,10 @@ class App:
 
     def quit(self):
         self.run = False
+        # удаление временных файлов
+        if os.path.exists("tmp"):
+            if os.path.isfile("tmp/screenshot.jpg"): os.remove("tmp/screenshot.jpg")
+            os.rmdir("tmp")   
     
     def reload_frame(self, new_frame: Frame):
         self.loaded_frame = new_frame

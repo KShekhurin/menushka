@@ -11,10 +11,7 @@ helper_blink_timer = 0
 menu_first_time = True
 settings_first_time = True
 
-saves_screenshots = [
-    None, None, None, None,
-    None, None, None, None
-]
+saves = {}
 
 # SCENES STATE
 last_scene_id = ""

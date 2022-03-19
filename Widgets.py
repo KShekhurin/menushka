@@ -526,7 +526,7 @@ class SaveSlot(pygame.sprite.Sprite):
 
         is_local = True if date == "пусто" else False
         self.desc_group = pygame.sprite.Group()
-        self.scene_name_label = Label(("center", self.pic_size[1]), date, is_local, 16, (self.w, self.h), (255, 255, 255), (0, 0, 0), 1, self.desc_group)
+        self.date_label = Label(("center", self.pic_size[1]), date, is_local, 16, (self.w, self.h), (255, 255, 255), (0, 0, 0), 1, self.desc_group)
 
         self.rect = pygame.rect.Rect(pos, size)
         self.image = pygame.Surface(size, pygame.SRCALPHA, 32)
@@ -576,6 +576,11 @@ class SaveSlot(pygame.sprite.Sprite):
 
     def set_screenshot(self, new_screenshot):
         self.screenschot_pic = new_screenshot
+    
+    def set_date(self, new_date):
+        self.date = new_date
+        self.date_label.text = new_date
+        self.date_label.isLocal = True if self.date == "пусто" else False
 
     def is_void(self):
         return self.screenshot_pic_data == get_res("saves_void_save_pic")
