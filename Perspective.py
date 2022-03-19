@@ -1,14 +1,73 @@
 import math
 
+import pygame
+
 class Perspective:
     def __init__(self):
-        pass
+        self.is_debug = False
 
     def get_scale_by_cord(self, pos):
         pass
 
     def is_pos_in_perspective(self, pos):
         pass
+
+    def draw_view(self, screen):
+        #Только для тестов перспективы! 
+        # Функция рисует поверх всего и ей глубоко насрать.
+        pass
+
+
+class PerspectiveSetter:
+    def __init__(self, point, bot_l_pos, bot_r_pos):
+        self.point_pos = point
+        self.bot_l_pos = bot_l_pos
+        self.bot_r_pos = bot_r_pos
+    
+    def calculate_scaling(self, pos):
+        
+
+        return 1 / (1 - (pos[1] - self.bot_l_pos[1]) / (self.bot_l_pos[1] - self.point_pos[1])) 
+
+
+class CustomPerspective(Perspective):
+    def __init__(self, setter: PerspectiveSetter, points):
+        super().__init__()
+
+        self.perspective_setter = setter
+        self.points = points
+    
+    def is_pos_in_perspective(self, pos):
+        p = self.points
+        result = False
+        j = len(p) - 1
+        for i in range(len(p)):
+            if ((p[i][1] < pos[1] and p[j][1] >= pos[1] or p[j][1] < pos[1] and p[i][1] >= pos[1]) and
+                 (p[i][0] + (pos[1] - p[i][1]) / (p[j][1] - p[i][1]) * (p[j][0] - p[i][0]) < pos[0])):
+                result = not result
+            j = i
+        return result
+
+    def get_scale_by_cord(self, pos):
+        return self.perspective_setter.calculate_scaling(pos)
+    
+    def draw_view(self, screen):
+        surface = pygame.Surface((800, 600))
+        surface.set_alpha(128)
+
+        pygame.draw.polygon(
+            surface, (255, 0, 0),
+            (self.perspective_setter.point_pos,
+            self.perspective_setter.bot_l_pos,
+            self.perspective_setter.bot_r_pos)
+        )
+
+        screen.blit(surface, (0, 0))
+
+        pygame.draw.lines(screen,
+            (255, 255, 255), True,
+            self.points
+        )        
 
 class RectPerspective(Perspective):
     def __init__(self, bottom, top, left, right):

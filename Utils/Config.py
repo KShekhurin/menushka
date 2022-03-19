@@ -180,6 +180,54 @@ portals_in_location = {
 }
 
 scenes_data = {
-    "summer": ((0, 0, 0), "scene_field_background_pic", (500, 600), Perspective.TrapezoidPerspective(screen_height, 440, 50, 750, 185, 615), items_in_location["summer"], portals_in_location["summer"]),
-    "church": ((0, 0, 0), "scene_church_background_pic", (500, 600), Perspective.TrapezoidPerspective(screen_height, 440, 50, 750, 185, 615), items_in_location["church"], portals_in_location["church"])
+    "summer": (
+        (0, 0, 0), "scene_field_background_pic", (500, 600),
+        Perspective.CustomPerspective(
+            Perspective.PerspectiveSetter(
+                (406, 290),
+                (800, 600),
+                (0, 600)
+            ),
+            [
+                (800, 600),
+                (0, 600),
+                (242, 430),
+                (523, 430),
+            ]
+        ), 
+        items_in_location["summer"], 
+        portals_in_location["summer"]),
+    "church": (
+        (0, 0, 0), "scene_church_background_pic", (500, 600),
+        Perspective.CustomPerspective(
+            Perspective.PerspectiveSetter(
+                (406, 250),
+                (800, 600),
+                (-100, 600)
+            ),
+            [
+                (800, 600),
+                (-100, 600),
+
+                (279, 367),
+                (516, 362),
+
+                (520, 418),
+
+                (666, 397),
+            ]
+        ), 
+        items_in_location["church"], 
+        portals_in_location["church"])
 }
+
+'''
+Perspective.TrapezoidPerspective(screen_height, 440, 50, 750, 185, 615)
+        Perspective.CustomPerspective(
+            Perspective.PerspectiveSetter(
+                (406, 290),
+                (800, 600),
+                (0, 600)
+            )
+        ), 
+'''
