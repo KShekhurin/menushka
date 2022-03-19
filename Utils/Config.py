@@ -164,9 +164,20 @@ items_in_location = {
     "summer": (
             ("mandarin", (562, 319), (544, 453)),
             ("plate", (405, 300), (398, 450))
+    ),
+    "church": ()
+}
+
+portals_in_location = {
+    "summer": (
+        ((200, 538), (725, 600), "church")
+    ),
+    "church": (
+       ((200, 538), (725, 600), "summer") 
     )
 }
 
 scenes_data = {
-    "summer": ((0, 0, 0), "scene_field_background_pic", (500, 600), Perspective.TrapezoidPerspective(screen_height, 440, 50, 750, 185, 615), items_in_location["summer"])
+    "summer": ((0, 0, 0), "scene_field_background_pic", (500, 600), Perspective.TrapezoidPerspective(screen_height, 440, 50, 750, 185, 615), items_in_location["summer"], portals_in_location["summer"]),
+    "church": ((0, 0, 0), "scene_church_background_pic", (500, 600), Perspective.TrapezoidPerspective(screen_height, 440, 50, 750, 185, 615), items_in_location["church"], portals_in_location["church"])
 }

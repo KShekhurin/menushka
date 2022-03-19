@@ -1,4 +1,5 @@
 import pygame
+from Pointer import PointerState
 import Utils.Config as Config
 from Utils.Assets import get_res
 
@@ -132,7 +133,7 @@ class PictureButton(pygame.sprite.Sprite):
 
         if self.rect.collidepoint(mouse_pos) and not self.focused:
             self.focused = True
-            self.on_hover(self.tip, False)
+            self.on_hover(self.tip, PointerState.DEFAULT)
         elif not self.rect.collidepoint(mouse_pos) and self.focused:
             self.focused = False
             self.on_lose_hover()

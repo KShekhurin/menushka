@@ -63,7 +63,7 @@ class InventorySlot(pygame.sprite.Sprite):
         if self.rect.collidepoint((mouse_x, mouse_y)) and not self.focused:
             self.focused = True
             if self.on_focus is not None and self.contain is not None:
-                self.on_focus(self.contain.tip, False)
+                self.on_focus(self.contain.tip, PointerState.DEFAULT)
         elif not self.rect.collidepoint((mouse_x, mouse_y)) and self.focused:
             self.focused = False
             if self.on_lose_focus is not None and self.contain is not None:

@@ -7,6 +7,7 @@ resources = {
     "cursor_default_pic": [None, "pics/рука.png"],
     "cursor_pickup_pic": [None, "pics/рука хватает.png"],
     "cursor_walk_pic": [None, "pics/сланцы.png"],
+    "cursor_goto_pic": [None, "pics/дверь.png"],
 
     "menu_button_pic": [None, "pics/кнопка.png"],
     "menu_selector_top_pic": [None, "pics/свиток начало.png"],
@@ -42,6 +43,7 @@ resources = {
     "scene_save_btn_hover_pic": [None, "pics/береста.png"],
 
     "scene_field_background_pic": [None, "pics/2 сцена.jpg"],
+    "scene_church_background_pic": [None, "pics/3 сцена.jpg"],
 
     "item_plate_pic": [None, "pics/тарелка.png"]
 }
