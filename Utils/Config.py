@@ -150,6 +150,8 @@ helper_motivational_phrase_freq = 10000
 
 current_local = local_rus
 
+
+
 items_data = {
     "mandarin": ((80, 80), "menu_slider_circle_pic", "Мандарин - царь фруктов"),
     "plate": ((90, 60), "item_plate_pic", "Тарелка разукрашенная")

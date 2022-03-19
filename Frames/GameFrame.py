@@ -1,4 +1,3 @@
-from distutils.command.config import config
 from Frames.Frames import *
 from Inventory import Inventory
 from Player import Player
@@ -8,6 +7,7 @@ from Portal import Portal
 from Widgets import PictureButton
 import Frames.MenuFrame as MenuFrame
 import Frames.SaveMenuFrame as SaveMenuFrame
+import Frames.DialogueFrame as DialogueFrame
 import os
 
 class GameFrameData:
@@ -59,10 +59,15 @@ class GameFrame(Frame):
                     if self.helper.rect.collidepoint(event.pos):
                         pass
                     elif self.data.perspective.is_pos_in_perspective(event.pos) and self.is_controlable:
-                        self.player.move_to(pygame.Vector2(event.pos))
+                        self.player.move_to(pygame.Vector2((event.pos[0] + self.app.pointer.w//2, event.pos[1] + self.app.pointer.h//2)))
                     elif not self.is_controlable and not self.inventory.is_focused():
                         self.inventory.close_inv()
                         self.is_controlable = True
+            
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+                self.app.pointer.set_state(PointerState.DEFAULT)
+                dialogue_data = DialogueFrame.DialogueFrameData(get_res("dialogue_meadow_background_pic"), get_res("dialogue_zhirik_default_pic"), get_res("dialogue_eminem_default_pic"), "Жирик")
+                self.app.reload_frame(DialogueFrame.DialogueFrame(dialogue_data))
 
         if self.is_controlable:
             self.item_group.update(events)
@@ -115,7 +120,8 @@ class GameFrame(Frame):
         self.clear_tip()
 
     def goto_portal(self, dest_id):
-        self.player.move_to(pygame.Vector2(pygame.mouse.get_pos()), self.goto_another_scene)
+        mouse_pos = pygame.mouse.get_pos()
+        self.player.move_to(pygame.Vector2((mouse_pos[0] + self.app.pointer.w//2, mouse_pos[1] + self.app.pointer.h//2)), self.goto_another_scene)
         self.active_portal = dest_id
 
     def goto_another_scene(self):
@@ -132,10 +138,13 @@ class GameFrame(Frame):
     def post_init(self, app):
         super().post_init(app)
 
+        self.helper_group = pygame.sprite.Group()
         self.player_group = pygame.sprite.Group()
         self.gui_group = pygame.sprite.Group()
         self.item_group = pygame.sprite.Group()
         self.portals_group = pygame.sprite.Group()
+
+        self.helper = Helper((0, Config.screen_height - 200), (200, 200), self.helper_group)
 
         self.player = Player(self.player_pos, (300, 300), self.data.perspective, self.add_item_to_inventory, self.player_group)
         self.tip_label = Label(("center", 560), "", False, 22, (Config.screen_width, Config.screen_height), (255,216,0), (0, 0, 0), 2, self.gui_group)
@@ -154,4 +163,4 @@ class GameFrame(Frame):
 
         self.inventory = Inventory(self.inventory_items, self.show_tip, self.clear_tip, self.gui_group)
 
-        self.append_many_widgets((self.gui_group, self.portals_group))
+        self.append_many_widgets((self.gui_group, self.portals_group, self.helper_group))

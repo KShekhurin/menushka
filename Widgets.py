@@ -585,3 +585,23 @@ class SaveSlot(pygame.sprite.Sprite):
 
     def is_void(self):
         return self.screenshot_pic_data == get_res("saves_void_save_pic")
+
+class Picture(pygame.sprite.Sprite):
+    def __init__(self, pos, size, pic, *groups) -> None:
+        super().__init__(*groups)
+
+        self.x, self.y = pos
+        self.w, self.h = size
+        self.pic = pygame.transform.scale(pic, size)
+
+        self.rect = pygame.rect.Rect(pos, size)
+        self.image = pygame.Surface(size, pygame.SRCALPHA, 32)
+
+    def draw(self):
+        self.image.blit(self.pic, (0, 0))
+
+    def update(self, *events):
+        self.draw()
+
+    def change_pic(self, new_pic):
+        self.pic = pygame.transform.scale(new_pic, (self.w, self.h))

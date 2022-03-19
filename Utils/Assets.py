@@ -45,7 +45,11 @@ resources = {
     "scene_field_background_pic": [None, "pics/2 сцена.jpg"],
     "scene_church_background_pic": [None, "pics/3 сцена.jpg"],
 
-    "item_plate_pic": [None, "pics/тарелка.png"]
+    "item_plate_pic": [None, "pics/тарелка.png"],
+
+    "dialogue_meadow_background_pic": [None, "pics/луг фон.png"],
+    "dialogue_zhirik_default_pic": [None, "pics/жирик.png"],
+    "dialogue_eminem_default_pic": [None, "pics/эминем.png"],
 }
 
 screenshots = {}
