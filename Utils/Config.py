@@ -199,7 +199,7 @@ scenes_data = {
         (0, 0, 0), "scene_church_background_pic", (500, 600),
         Perspective.CustomPerspective(
             Perspective.PerspectiveSetter(
-                (406, 100),
+                (406, 250),
                 (800, 600),
                 (-100, 600)
             ),

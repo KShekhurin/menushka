@@ -28,7 +28,7 @@ class GameFrame(Frame):
 
         self.id = id
         self.data = GameFrameData(*Config.scenes_data[id])
-        self.data.perspective.is_debug = False
+        self.data.perspective.is_debug = True
         self.items = []
         self.portals = []
         self.active_portal = None
