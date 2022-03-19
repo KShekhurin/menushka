@@ -28,6 +28,7 @@ class GameFrame(Frame):
 
         self.id = id
         self.data = GameFrameData(*Config.scenes_data[id])
+        self.data.perspective.is_debug = False
         self.items = []
         self.portals = []
         self.active_portal = None
@@ -45,6 +46,10 @@ class GameFrame(Frame):
 
         screen.fill(self.data.background_color)
         screen.blit(self.data.background_pic, (0, 0))
+
+        if self.data.perspective.is_debug:
+            self.data.perspective.draw_view(screen)
+
         self.item_group.draw(screen)
         self.player_group.draw(screen)
 
@@ -66,7 +71,7 @@ class GameFrame(Frame):
 
         if self.is_controlable:
             self.item_group.update(events)
-        
+
         self.player_group.update(events)
 
         mouse_pos = pygame.mouse.get_pos()
