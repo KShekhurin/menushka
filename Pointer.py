@@ -6,7 +6,8 @@ class PointerState(Enum):
     DEFAULT = 1,
     PICKUP = 2,
     WALK = 3,
-    GOTO = 4
+    GOTO = 4,
+    SPEAK = 5
 
 class Pointer():
     def __init__(self, pos, size):
@@ -19,7 +20,8 @@ class Pointer():
             PointerState.DEFAULT: pygame.transform.scale(get_res("cursor_default_pic"), size),
             PointerState.PICKUP: pygame.transform.scale(get_res("cursor_pickup_pic"), size),
             PointerState.WALK: pygame.transform.scale(get_res("cursor_walk_pic"), size),
-            PointerState.GOTO: pygame.transform.scale(get_res("cursor_goto_pic"), size)
+            PointerState.GOTO: pygame.transform.scale(get_res("cursor_goto_pic"), size),
+            PointerState.SPEAK: pygame.transform.scale(get_res("cursor_speak_pic"), size)
         }
 
         self.rect = pygame.rect.Rect(pos, size)

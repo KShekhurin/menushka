@@ -163,6 +163,7 @@ dialogue_characters_data = {
     }, "Жирик")
 }
 
+# Формат: айди персонажа, список реплик: (кто говорит: [True - игрок], состояние, анимация, слова)
 dialogues_data = {
     "zhirik_0": (
         "zhirik", (
@@ -190,6 +191,10 @@ inventory_items_data = {
     "plate": ((40, 30), "item_plate_pic", "Тарелка разукрашенная")
 }
 
+npcs_data = {
+    "zhirik": ("npc_zhirik_default_pic", "Жирик, совесть нации")
+}
+
 # Формат: айди, позиция предмета, позиция персонажа при поднятии
 items_in_location = {
     "summer": (
@@ -207,6 +212,13 @@ portals_in_location = {
     "church": (
        ((200, 538), (725, 600), "summer") 
     )
+}
+
+npcs_in_location = {
+    "summer": (
+        ("zhirik", (250, 250), (310, 483), (140, 240))
+    ),
+    "church": ()
 }
 
 # Формат: цвет фона, фоновая картинка, позиция персонажа, перспектива
@@ -227,7 +239,8 @@ scenes_data = {
             ]
         ), 
         items_in_location["summer"], 
-        portals_in_location["summer"]),
+        portals_in_location["summer"],
+        npcs_in_location["summer"]),
     "church": (
         (0, 0, 0), "scene_church_background_pic", (500, 600),
         Perspective.CustomPerspective(
@@ -249,7 +262,8 @@ scenes_data = {
             ]
         ), 
         items_in_location["church"], 
-        portals_in_location["church"])
+        portals_in_location["church"],
+        npcs_in_location["church"])
 }
 
 '''

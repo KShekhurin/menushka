@@ -8,6 +8,7 @@ resources = {
     "cursor_pickup_pic": [None, "pics/рука хватает.png"],
     "cursor_walk_pic": [None, "pics/сланцы.png"],
     "cursor_goto_pic": [None, "pics/дверь.png"],
+    "cursor_speak_pic": [None, "pics/губы.png"],
 
     "menu_button_pic": [None, "pics/кнопка.png"],
     "menu_selector_top_pic": [None, "pics/свиток начало.png"],
@@ -46,6 +47,8 @@ resources = {
     "scene_church_background_pic": [None, "pics/3 сцена.jpg"],
 
     "item_plate_pic": [None, "pics/тарелка.png"],
+
+    "npc_zhirik_default_pic": [None, "pics/жирикк стоит.png"],
 
     "dialogue_meadow_background_pic": [None, "pics/луг фон.png"],
     "dialogue_zhirik_default_pic": [None, "pics/жирик.png"],

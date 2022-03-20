@@ -37,6 +37,8 @@ class Player(pygame.sprite.Sprite):
     def draw(self):
         self.image.blit(self.default_pic, (0, 0))
 
+        pygame.draw.rect(self.image, (0, 255, 0), pygame.rect.Rect(0, 0, self.w*self.scale, self.h*self.scale), 1)
+
     def update(self, events):
         self.__scale()
 

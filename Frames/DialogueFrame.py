@@ -6,15 +6,16 @@ import pygame
 from Widgets import *
 import Utils.Settings as Settings
 from enum import Enum
+import Frames.GameFrame as GameFrame
 
 class DialogueFrameData:
-    def __init__(self, background_pic, character_id, dialogue_id):
+    def __init__(self, background_pic, dialogue_id):
         self.background_pic = background_pic
-        self.character_id = character_id
-        self.character_pics = Config.dialogue_characters_data[character_id][1]
+        self.character_id = Config.dialogues_data[dialogue_id][0]
+        self.character_pics = Config.dialogue_characters_data[self.character_id][1]
         self.player_pics = Config.dialogue_characters_data["player"][1]
-        self.character_name = Config.dialogue_characters_data[character_id][2]
-        self.character_color = Config.dialogue_characters_data[character_id][0]
+        self.character_name = Config.dialogue_characters_data[self.character_id][2]
+        self.character_color = Config.dialogue_characters_data[self.character_id][0]
         self.player_color = Config.dialogue_characters_data["player"][0]
         self.player_name = Config.dialogue_characters_data["player"][2]
         self.actions = Config.dialogues_data[dialogue_id][1]
@@ -135,7 +136,8 @@ class DialogueCharacter(pygame.sprite.Sprite):
 
         self.x, self.y = rel_pos
         self.w, self.h = size
-        self.pic_dict = pic_dict
+        self.pic_dict = pic_dict.copy()
+        print(pic_dict)
         for key in self.pic_dict:
             self.pic_dict[key] = pygame.transform.scale(get_res(self.pic_dict[key]), size)
         self.current_state = current_state
@@ -230,7 +232,7 @@ class DialogueFrame(Frame):
         text_color = self.data.player_color if self.player_turn else self.data.character_color
 
         self.character_spr = DialogueCharacter((50, 50), (300, 250), (50, 75), (700, 300), self.data.character_pics, "default", not self.player_turn, self.gui_group)
-        self.player_spr = DialogueCharacter((375, 50), (300, 250), (50, 75), (700, 300), self.data.player_pics, "default", self.player_turn, self.gui_group)
+        self.player_spr = DialogueCharacter((350, 50), (300, 250), (50, 75), (700, 300), self.data.player_pics, "default", self.player_turn, self.gui_group)
 
         self.phrase = DialoguePhrase((0, 400), (Config.screen_width, 200), text_color, 40, 40, self.gui_group)
 
@@ -259,6 +261,8 @@ class DialogueFrame(Frame):
                         self.player_spr.complete_anim()
                     elif self.act_index < len(self.data.actions):
                         self.act_further()
+                    else:
+                        self.app.reload_frame(GameFrame.GameFrame(Settings.last_scene_id))
 
         self.gui_group.update(*events)
 
