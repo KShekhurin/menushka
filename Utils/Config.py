@@ -150,18 +150,47 @@ helper_motivational_phrase_freq = 10000
 
 current_local = local_rus
 
+# Формат: цвет текста, картинки состояний, отображаемое имя
+dialogue_characters_data = {
+    "player": ((88, 210, 100), {
+        "default": "dialogue_eminem_default_pic",
+        "hand": "dialogue_eminem_worried_pic",
+        "cries": "dialogue_eminem_cries_pic"
+    }, "Лука"),
+    "zhirik": ((128, 30, 200), {
+        "default": "dialogue_zhirik_default_pic",
+        "wtf": "dialogue_zhirik_wtf_pic"
+    }, "Жирик")
+}
 
+dialogues_data = {
+    "zhirik_0": (
+        "zhirik", (
+            (False, "default", "appear_left", "Братишка! Братишка!"),
+            (True, "hand", "appear_right", "Заебал, блядь!"),
+            (False, "default", "none", "Как поспал, братишка? Проголодался наверное, братишка?"),
+            (True, "default", "none", "Ёб твою мать! Блядь! Иди отсюда на хуй, блядь!"),
+            (False, "wtf", "none", "Что случилося-то?"),
+            (True, "hand", "none", "Ты че, обосрался что ли, мудак, блядь?"),
+            (False, "wtf", "none", "Не, я не какал, я тебе покушать принёс"),
+            (True, "cries", "none", "Сука, блядь, пидорас, блядь!")
+        )
+    )
+}
 
+# Формат: размер, картинка, текст при наведении
 items_data = {
     "mandarin": ((80, 80), "menu_slider_circle_pic", "Мандарин - царь фруктов"),
     "plate": ((90, 60), "item_plate_pic", "Тарелка разукрашенная")
 }
 
+# Формат: размер, картинка, текст при наведении
 inventory_items_data = {
     "mandarin": ((30, 30), "menu_slider_circle_pic", "Мандарин - царь фруктов"),
     "plate": ((40, 30), "item_plate_pic", "Тарелка разукрашенная")
 }
 
+# Формат: айди, позиция предмета, позиция персонажа при поднятии
 items_in_location = {
     "summer": (
             ("mandarin", (562, 319), (544, 453)),
@@ -170,6 +199,7 @@ items_in_location = {
     "church": ()
 }
 
+# Формат: позиция, размер, айди локации, на которую ведет
 portals_in_location = {
     "summer": (
         ((200, 538), (725, 600), "church")
@@ -179,6 +209,7 @@ portals_in_location = {
     )
 }
 
+# Формат: цвет фона, фоновая картинка, позиция персонажа, перспектива
 scenes_data = {
     "summer": (
         (0, 0, 0), "scene_field_background_pic", (500, 600),

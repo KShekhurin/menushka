@@ -33,6 +33,12 @@ class MenuFrame(NonGameFrame):
         self.helper.save_blink_timer()
         self.helper.quit_threads()
 
+        Settings.last_scene_id = ""
+        Settings.items_pickedup = {
+            "summer": [False, False]
+        }
+        Settings.inventory_items = []
+
         self.app.reload_frame(GameFrame.GameFrame("summer"))
         Settings.prev_frame = MenuFrame
 

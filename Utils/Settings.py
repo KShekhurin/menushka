@@ -15,6 +15,7 @@ saves = {}
 
 # SCENES STATE
 last_scene_id = ""
+player_pos = [-1, -1]
 
 items_pickedup = {
     "summer": [False, False]

@@ -1,7 +1,7 @@
 import pygame
 from Frames.Frames import Frame
 from Frames.MenuFrame import MenuFrame
-from Pointer import Pointer
+from Pointer import Pointer, PointerState
 from Utils.Assets import get_res
 import Utils.Config as Config
 import Utils.Settings as Settings
@@ -73,6 +73,7 @@ class App:
             os.rmdir("tmp")   
     
     def reload_frame(self, new_frame: Frame):
+        self.pointer.set_state(PointerState.DEFAULT)
         self.loaded_frame = new_frame
         self.loaded_frame.post_init(self)
 

@@ -49,7 +49,10 @@ resources = {
 
     "dialogue_meadow_background_pic": [None, "pics/луг фон.png"],
     "dialogue_zhirik_default_pic": [None, "pics/жирик.png"],
-    "dialogue_eminem_default_pic": [None, "pics/эминем.png"],
+    "dialogue_zhirik_wtf_pic": [None, "pics/жирик втф.png"],
+    "dialogue_eminem_default_pic": [None, "pics/эминем смотрит.png"],
+    "dialogue_eminem_worried_pic": [None, "pics/эминем.png"],
+    "dialogue_eminem_cries_pic": [None, "pics/эминем орет.png"],
 }
 
 screenshots = {}

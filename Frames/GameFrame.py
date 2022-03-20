@@ -71,7 +71,7 @@ class GameFrame(Frame):
             
             if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
                 self.app.pointer.set_state(PointerState.DEFAULT)
-                dialogue_data = DialogueFrame.DialogueFrameData(get_res("dialogue_meadow_background_pic"), get_res("dialogue_zhirik_default_pic"), get_res("dialogue_eminem_default_pic"), "Жирик")
+                dialogue_data = DialogueFrame.DialogueFrameData(get_res("dialogue_meadow_background_pic"), "zhirik", "zhirik_0")
                 self.app.reload_frame(DialogueFrame.DialogueFrame(dialogue_data))
 
         if self.is_controlable:
