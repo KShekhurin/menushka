@@ -1,3 +1,4 @@
+from VidPlayer import Video
 import pygame
 import Config
 
@@ -392,4 +393,31 @@ class Selector(pygame.sprite.Sprite):
             elif event.type == pygame.MOUSEBUTTONDOWN and self.focused and not self.selected:
                 self.selected = True
 
+        self.draw()
+
+
+class Intro(pygame.sprite.Sprite):
+    def __init__(self, video_pos, on_end=None, *groups):
+        super().__init__(*groups)
+
+        self.on_end = on_end
+
+        self.video = Video(video_pos)
+        self.rect = self.rect = pygame.rect.Rect((0, 0), self.video.get_size())
+        self.image = pygame.Surface(self.video.get_size())
+        self.video.play()
+    
+    def draw(self):
+       self.video.draw_to(self.image, (0, 0))
+
+    def update(self, *events):
+        if not self.video.is_playing:
+            #У нас миллиарды феритовых коллечек!
+            self.on_end()
+        
+        for event in events[0]:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.video.stop()
+        
         self.draw()

@@ -1,9 +1,9 @@
 from App import App
-from Frames import MenuFrame
+from Frames import IntroFrame
 import Config
 
 def main():
-    frame = MenuFrame()
+    frame = IntroFrame()
     application = App(frame, (Config.screen_width, Config.screen_height))
     application.start()
 

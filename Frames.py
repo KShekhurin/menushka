@@ -1,6 +1,6 @@
 import sys
 import pygame
-from Widgets import (Button, ButtonDesignParams, Label, Slider,
+from Widgets import (Button, ButtonDesignParams, Intro, Label, Slider,
                     SliderWithValue, Selector, SelectorDesignParams)
 from Helper import Helper, h_click_snd
 import Config
@@ -101,6 +101,26 @@ class NonGameFrame(Frame):
 
         self.helper.change_background(self.background)
         Settings.lang_options = options
+
+
+class IntroFrame(Frame):
+    def __init__(self):
+        super().__init__()
+    
+    def goto_menu(self):
+        self.app.reload_frame(MenuFrame())
+
+    def post_init(self, app):
+        super().post_init(app)
+
+        self.intro_group = pygame.sprite.Group()
+        self.intro = Intro("vids/zast.webm", self.goto_menu, self.intro_group)
+        #self.label = Label(("center", 550), "Для проспуска нажмите пробел", False, 26, self.intro_group)
+
+        self.append_many_widgets((
+            self.intro_group,
+        ))
+
 
 
 class MenuFrame(NonGameFrame):
