@@ -480,7 +480,8 @@ class Input(pygame.sprite.Sprite):
 
             if event.type == pygame.KEYDOWN and self.focused:
                 if pygame.K_a <= event.key <= pygame.K_z or event.key == pygame.K_SPACE:
-                    self.text += chr(event.key)
+                    ch = chr(event.key - 32) if len(self.text) == 0 or self.text[len(self.text)-1:len(self.text)] == " " else chr(event.key)
+                    self.text += ch
                     self.value.text = self.text
                 if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:len(self.text)-1]
