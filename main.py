@@ -1,5 +1,5 @@
 from App import App
-from Frames import IntroFrame
+from Frames import IntroFrame, MenuFrame
 import Config
 
 def main():

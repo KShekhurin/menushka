@@ -5,6 +5,7 @@ from Widgets import (Button, ButtonDesignParams, Intro, Label, Slider,
 from Helper import Helper, h_click_snd
 import Config
 import Settings
+import Saves
 
 pygame.init()
 
@@ -136,6 +137,15 @@ class MenuFrame(NonGameFrame):
         
         self.app.reload_frame(SettingsFrame())
 
+    def goto_scores(self):
+        self.helper.save_blink_timer()
+
+        if self.helper.is_speaking():
+            self.helper.humble()
+        self.helper.quit_threads()
+        
+        self.app.reload_frame(ScoresFrame())
+
     def exit(self):
         self.helper.quit_threads()
         self.app.quit()
@@ -145,7 +155,8 @@ class MenuFrame(NonGameFrame):
 
         self.buttons_group = pygame.sprite.Group()
 
-        Button(("center", 10 + 300), (250, 70), "новая_игра", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), None, self.buttons_group)
+        Button(("center", -70 + 300), (250, 70), "новая_игра", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), None, self.buttons_group)
+        Button(("center", 10 + 300), (250, 70), "рекорды", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_scores, self.buttons_group)
         Button(("center", 90 + 300), (250, 70), "настройки", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_settings, self.buttons_group)
         Button(("center", 170 + 300), (250, 70), "выйти", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.exit, self.buttons_group)
 
@@ -198,6 +209,8 @@ class SettingsFrame(NonGameFrame):
         btn_hover_snd.set_volume(self.sound_volume)
         h_click_snd.set_volume(self.sound_volume)
 
+        Saves.save_settings()
+
     def update_sound_volume(self, new_volume):
         self.no_action_timer = pygame.time.get_ticks()
 
@@ -238,3 +251,40 @@ class SettingsFrame(NonGameFrame):
         if is_time_to_motiv:
             self.helper.say_motiv()
             self.no_action_timer = pygame.time.get_ticks()
+
+class ScoresFrame(NonGameFrame):
+    def __init__(self):
+        super().__init__()
+
+    def goto_menu(self):
+        self.helper.save_blink_timer()
+
+        if self.helper.is_speaking():
+            self.helper.humble()
+        self.helper.quit_threads()
+
+        self.app.reload_frame(MenuFrame())
+
+    def post_init(self, app):
+        super().post_init(app)
+
+        self.scores_group = pygame.sprite.Group()
+
+        k = 0
+        max_len = 0
+        for key in Settings.scores:
+            if k == 0: max_len = len(str(Settings.scores[key]))
+            Label((100, 150+k*40), key, False, 26, self.scores_group)
+            Label((500, 150+k*40), " " *(max_len - len(str(Settings.scores[key]))) + str(Settings.scores[key]), False, 26, self.scores_group)
+            k += 1
+        
+        Button(("center", 440), (300, 70), "ясно", ButtonDesignParams((0, 0, 0), btn_pic, btn_pic, btn_hover_snd, btn_click_snd, 26), self.goto_menu, self.scores_group)
+
+        Selector((0, 0), (150, 120), Settings.lang_options, SelectorDesignParams(selector_pic_top, selector_pic_middle, selector_pic_bottom, btn_click_snd),self.change_localization, self.scores_group)
+
+        self.helper = Helper((0, Config.screen_height - 200), (200, 200), (0, 0, 0), self.scores_group)
+
+        self.append_many_widgets((self.scores_group, ))
+
+    def update(self, events):
+        super().update(events)

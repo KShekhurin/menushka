@@ -1,5 +1,9 @@
 import pygame
-from Frames import Frame
+from Frames import Frame, btn_click_snd, btn_hover_snd
+from Helper import h_click_snd
+import Saves
+import os.path
+import Settings
 
 class App:
     def __init__(self, loaded_frame: Frame, start_size=(200, 200)):
@@ -12,6 +16,13 @@ class App:
         
         self.screen = pygame.display.set_mode(self.start_size)
         self.run = True
+
+        if os.path.isfile("saves/settings.json"):
+            Saves.load_settings()
+            pygame.mixer.music.set_volume(Settings.music_volume)
+            btn_click_snd.set_volume(Settings.sound_volume)
+            btn_hover_snd.set_volume(Settings.sound_volume)
+            h_click_snd.set_volume(Settings.sound_volume)
 
         self.loaded_frame.post_init(self)
 
