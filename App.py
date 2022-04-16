@@ -11,6 +11,7 @@ class App:
         pygame.font.init()
         
         self.screen = pygame.display.set_mode(self.start_size)
+        clock = pygame.time.Clock()
         self.run = True
 
         self.loaded_frame.post_init(self)
@@ -28,6 +29,8 @@ class App:
             self.loaded_frame.draw(self.screen)
 
             pygame.display.flip()
+
+            clock.tick(30)
 
     def quit(self):
         self.run = False
