@@ -304,6 +304,6 @@ class Video:
             return self._scaled_frame()
 
     def draw_to(self, surface, pos):
-        if self.get_frame() is not None:
-            frame = self.get_frame()
+        frame = self.get_frame()
+        if frame is not None and surface is not None:
             surface.blit(frame, pos)
