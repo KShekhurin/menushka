@@ -102,6 +102,7 @@ class NonGameFrame(Frame):
 
         self.helper.change_background(self.background)
         Settings.lang_options = options
+        Saves.save_settings()
 
 
 class IntroFrame(Frame):
@@ -155,6 +156,24 @@ class MenuFrame(NonGameFrame):
         
         self.app.reload_frame(ScoresFrame())
 
+    def goto_rules(self):
+        self.helper.save_blink_timer()
+
+        if self.helper.is_speaking():
+            self.helper.humble()
+        self.helper.quit_threads()
+        
+        self.app.reload_frame(RulesFrame())
+
+    def goto_plot(self):
+        self.helper.save_blink_timer()
+
+        if self.helper.is_speaking():
+            self.helper.humble()
+        self.helper.quit_threads()
+        
+        self.app.reload_frame(PlotFrame())
+
     def exit(self):
         self.helper.quit_threads()
         self.app.quit()
@@ -164,12 +183,14 @@ class MenuFrame(NonGameFrame):
 
         self.buttons_group = pygame.sprite.Group()
 
-        Button(("center", -70 + 300), (250, 70), "новая_игра", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.start, self.buttons_group)
-        Button(("center", 10 + 300), (250, 70), "рекорды", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_scores, self.buttons_group)
-        Button(("center", 90 + 300), (250, 70), "настройки", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_settings, self.buttons_group)
-        Button(("center", 170 + 300), (250, 70), "выйти", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.exit, self.buttons_group)
+        Button(("center", -200 + 300), (250, 70), "новая_игра", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.start, self.buttons_group)
+        Button(("center", -120 + 300), (250, 70), "правила", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_rules, self.buttons_group)
+        Button(("center", -40 + 300), (250, 70), "сюжет", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_plot, self.buttons_group)
+        Button(("center", 40 + 300), (250, 70), "рекорды", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_scores, self.buttons_group)
+        Button(("center", 120 + 300), (250, 70), "настройки", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_settings, self.buttons_group)
+        Button(("center", 200 + 300), (250, 70), "выйти", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.exit, self.buttons_group)
 
-        Label(("center", 150), "рыба", True, 26, (255, 255, 255), (Config.screen_width, Config.screen_height), self.buttons_group)
+        #Label(("center", 50), "рыба", True, 26, (255, 255, 255), (Config.screen_width, Config.screen_height), self.buttons_group)
 
         Selector((0, 0), (150, 120), Settings.lang_options, SelectorDesignParams(selector_pic_top, selector_pic_middle, selector_pic_bottom, btn_click_snd),self.change_localization, self.buttons_group)
 
@@ -329,3 +350,88 @@ class NicknameFrame(NonGameFrame):
 
     def update(self, *events):
         super().update(*events)
+
+class RulesFrame(NonGameFrame):
+    def __init__(self):
+        super().__init__()
+
+    def goto_menu(self):
+        self.helper.save_blink_timer()
+
+        if self.helper.is_speaking():
+            self.helper.humble()
+        self.helper.quit_threads()
+
+        self.app.reload_frame(MenuFrame())
+
+    def post_init(self, app):
+        super().post_init(app)
+
+        self.rules_group = pygame.sprite.Group()
+        
+        Label(("center", 70), "правила_1", True, 28, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 150), "правила_2", True, 18, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 170), "правила_3", True, 18, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 190), "правила_4", True, 18, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 265), "правила_5", True, 28, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 300), "правила_6", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 320), "правила_7", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 340), "правила_8", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 360), "правила_9", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 380), "правила_10", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+        Label(("center", 400), "правила_11", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.rules_group)
+
+        Button((575, 525), (200, 50), "вернуться", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_menu, self.rules_group)
+
+        Selector((0, 0), (150, 120), Settings.lang_options, SelectorDesignParams(selector_pic_top, selector_pic_middle, selector_pic_bottom, btn_click_snd),self.change_localization, self.rules_group)
+
+        self.helper = Helper((0, Config.screen_height - 200), (200, 200), (0, 0, 0), self.rules_group)
+
+        self.append_widget(self.rules_group)
+
+class PlotFrame(NonGameFrame):
+    def __init__(self):
+        super().__init__()
+
+    def goto_menu(self):
+        self.helper.save_blink_timer()
+
+        if self.helper.is_speaking():
+            self.helper.humble()
+        self.helper.quit_threads()
+
+        self.app.reload_frame(MenuFrame())
+
+    def post_init(self, app):
+        super().post_init(app)
+
+        self.plot_group = pygame.sprite.Group()
+        
+        Label(("center", 50), "сюжет_1", True, 28, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 80), "сюжет_2", True, 28, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 110), "сюжет_3", True, 28, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+
+        Label(("center", 170), "сюжет_4", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 190), "сюжет_5", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+
+        Label(("center", 240), "сюжет_6", True, 18, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 260), "сюжет_7", True, 18, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 280), "сюжет_8", True, 18, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 310), "сюжет_9", True, 18, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 330), "сюжет_10", True, 18, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 350), "сюжет_11", True, 18, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+
+        Label(("center", 390), "сюжет_12", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 410), "сюжет_13", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 430), "сюжет_14", True, 20, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+
+        Label(("center", 470), "сюжет_15", True, 14, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+        Label(("center", 480), "сюжет_16", True, 14, (255, 255, 255), (Config.screen_width, Config.screen_height), self.plot_group)
+
+        Button((575, 525), (200, 50), "вернуться", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_menu, self.plot_group)
+
+        Selector((0, 0), (150, 120), Settings.lang_options, SelectorDesignParams(selector_pic_top, selector_pic_middle, selector_pic_bottom, btn_click_snd),self.change_localization, self.plot_group)
+
+        self.helper = Helper((0, Config.screen_height - 200), (200, 200), (0, 0, 0), self.plot_group)
+
+        self.append_widget(self.plot_group)
