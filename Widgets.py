@@ -1,7 +1,13 @@
+from secrets import choice
+from turtle import right, speed
 from VidPlayer import Video
 import pygame
 import Config
 
+
+gbg = pygame.image.load('pics/katand.png')
+savle = pygame.image.load('pics/shavle.png')
+samu1 = pygame.image.load('pics/samu1.png')
 
 class ButtonDesignParams:
     def __init__(self, background_color_default=(0, 0, 0), pic_default=None, pic_focused=None, sound_hover=None, sound_click=None, font_size=26):
@@ -17,6 +23,192 @@ class ButtonDesignParams:
         self.sound_click = sound_click
 
         self.font_size = font_size
+
+
+class KingSpawner(pygame.sprite.Sprite):
+    def __init__(self, spawners, katanas, her, get_back, *groups):
+        super().__init__(*groups)
+
+        self.get_back = get_back
+
+        self.strike = 0
+        self.kef = 0
+        self.her = her
+        self.katanas = katanas
+        self.spawners = spawners
+        self.rect = pygame.rect.Rect((0, 0), (0, 0))
+        self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
+
+        self.timer_interval = 2000
+        self.timer_event = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.timer_event, self.timer_interval)
+    
+    def update(self, *events):
+        if self.her.lifes_cnt == 0:
+            self.get_back()
+
+
+        for event in events[0]:
+            if event.type == self.timer_event:
+                choice(self.spawners).spawn_katana()
+        
+        for katana in self.katanas:
+            if katana.rect.colliderect(self.her.hitbox):
+                self.katanas.remove(katana)
+                self.strike += 1
+                self.her.hp += 5
+
+
+            if katana.direction == "right" and katana.rect.x + katana.rect.width > 300:
+                self.katanas.remove(katana)
+                self.her.lifes_cnt -= 1
+                self.strike = 0
+            elif katana.direction != "right" and katana.rect.x < 800 - 300:
+                self.katanas.remove(katana)
+                self.her.lifes_cnt -= 1
+                self.strike = 0
+        
+        if self.strike == 10:
+            self.strike = 0
+            self.her.lifes_cnt += 1
+        
+        if self.her.hp // 25 != self.kef:
+            print(1)
+            self.kef = self.her.hp // 25
+            self.timer_interval = 2000 - 100 * self.kef
+            pygame.time.set_timer(self.timer_event, self.timer_interval)
+
+
+class Katana(pygame.sprite.Sprite):
+    def __init__(self, pos, direction, speed, *groups):
+        super().__init__(*groups)
+
+        self.direction = direction
+        self.speed = speed
+
+        self.rect = pygame.rect.Rect(pos, (85, 50))
+        self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
+    
+    def draw(self):
+        self.image.blit(gbg, (0, 0))
+
+    def move(self):
+        koef = 1 if self.direction == "right" else -1
+        self.rect.x += koef * self.speed
+    
+    def update(self, *events):
+        self.move()
+        self.draw()
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self, spawners, lifes_cnt, *groups):
+        super().__init__(*groups)
+
+        self.direction = "left"
+        self.lifes_cnt = lifes_cnt
+        self.hp = 0
+        self.spawners = spawners
+
+
+        self.rect = pygame.rect.Rect((200, 120), (138, 210))
+        self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
+
+        self.hitbox = pygame.rect.Rect((0, 0), (138, 50))
+
+        self.move(self.spawners[list(spawners.keys())[0]].get_pos(),
+            self.spawners[list(spawners.keys())[0]].direction)
+    
+    def draw(self):
+        self.image.fill((0, 0, 0, 0))
+        if self.direction != "right":
+            self.image.blit(samu1, (0, 0))
+        else:
+            self.image.blit(pygame.transform.flip(samu1, True, False), (0, 0))
+    
+    def move(self, pos, direction):
+        self.direction = direction
+        self.rect.x = pos[0] 
+        self.rect.y = pos[1]
+
+        self.hitbox.x = pos[0] 
+        self.hitbox.y = pos[1] + 100
+
+    def update(self, *events):
+        for event in events[0]:
+            if event.type == pygame.KEYDOWN:
+                if event.key in self.spawners.keys():
+                    self.move(self.spawners[event.key].get_pos(), self.spawners[event.key].direction)
+                    
+
+        self.draw()
+
+
+class LivesCounter(pygame.sprite.Sprite):
+    def __init__(self, her, *groups):
+        super().__init__(*groups)
+
+        self.her = her
+        self.rect = pygame.rect.Rect((0, 0), (450, 125))
+        self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
+
+        self.font = pygame.font.Font("Cyberbit.ttf", 50)
+    
+    def draw(self):
+        self.image.fill((0, 0, 0, 0))
+        rendered_text = self.font.render(f"ЧЕСТЬ: {self.her.lifes_cnt}", True, (255, 20, 147))
+        self.image.blit(rendered_text, (50, 0))
+
+    
+    def update(self, *events):
+        self.draw()
+
+
+class ScoreCounter(pygame.sprite.Sprite):
+    def __init__(self, her, *groups):
+        super().__init__(*groups)
+        self.her = her
+
+        self.rect = pygame.rect.Rect((450, 0), (350, 125))
+        self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
+        self.font = pygame.font.Font("Cyberbit.ttf", 50)
+
+    def draw(self):
+        self.image.fill((0, 0, 0, 0))
+        rendered_text = self.font.render(f"ОЧКИ: {self.her.hp}", True, (255, 20, 147))
+        self.image.blit(rendered_text, (0, 0))
+
+    
+    def update(self, *events):
+        self.draw()
+
+
+class Spavner(pygame.sprite.Sprite):
+    def __init__(self, katana_group, pos=(0, 0), direction="right", *groups):
+        super().__init__(*groups)
+
+        self.katana_group = katana_group
+        self.direction = direction
+        self.rect = pygame.rect.Rect(pos, (250, 75))
+        self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
+    
+    def get_pos(self):
+        if self.direction == "right":
+            return (self.rect.x + self.rect.width, self.rect.y + 120 - 210)
+        else:
+            return (self.rect.x - 138, self.rect.y + 120 - 210)
+
+    def spawn_katana(self):
+        if self.direction == "right":
+            Katana((-85, self.rect.y + 12), "right", 1, self.katana_group)
+        else:
+            Katana((800, self.rect.y + 12), "notright", 1, self.katana_group)
+
+    def draw(self):
+        self.image.blit(savle, (0, 0))
+    
+    def update(self, *events):
+        self.draw()
+
 
 
 class Button(pygame.sprite.Sprite):
@@ -94,12 +286,12 @@ class Button(pygame.sprite.Sprite):
 
 
 class Label(pygame.sprite.Sprite):
-    def __init__(self, pos, text, isLocal=True, font_size=26, color=(255, 255, 255), container_size=(Config.screen_width, Config.screen_height), *groups) -> None:
+    def __init__(self, pos, text, isLocal=True, font_size=26, color=(255, 20, 147), container_size=(Config.screen_width, Config.screen_height), *groups, font="Cyberbit.ttf") -> None:
         super().__init__(*groups)
 
         self.text = text
 
-        self.font = pygame.font.Font("Cyberbit.ttf", font_size)
+        self.font = pygame.font.Font(font, font_size)
         self.isLocal = isLocal
         self.color = color
         self.container_size = container_size
