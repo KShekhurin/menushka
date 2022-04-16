@@ -94,13 +94,15 @@ class Button(pygame.sprite.Sprite):
 
 
 class Label(pygame.sprite.Sprite):
-    def __init__(self, pos, text, isLocal=True, font_size=26, *groups) -> None:
+    def __init__(self, pos, text, isLocal=True, font_size=26, color=(255, 255, 255), container_size=(Config.screen_width, Config.screen_height), *groups) -> None:
         super().__init__(*groups)
 
         self.text = text
 
         self.font = pygame.font.Font("Cyberbit.ttf", font_size)
         self.isLocal = isLocal
+        self.color = color
+        self.container_size = container_size
 
         self.x, self.y = pos
 
@@ -108,10 +110,10 @@ class Label(pygame.sprite.Sprite):
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
     
     def draw(self):
-        rendered_text = self.font.render(Config.current_local[self.text] if self.isLocal else self.text, True, (255, 255, 255))
+        rendered_text = self.font.render(Config.current_local[self.text] if self.isLocal else self.text, True, self.color)
 
-        x = self.x if not (self.x == "center") else Config.screen_width/2 - rendered_text.get_width()/2
-        y = self.y if not (self.y == "center") else Config.screen_height/2 - rendered_text.get_height()/2
+        x = self.x if not (self.x == "center") else self.container_size[0]/2 - rendered_text.get_width()/2
+        y = self.y if not (self.y == "center") else self.container_size[1]/2 - rendered_text.get_height()/2
 
         self.rect = pygame.rect.Rect(
             (x, y), 
@@ -212,7 +214,7 @@ class SliderWithValue(pygame.sprite.Sprite):
 
         self.inner_group = pygame.sprite.Group()
         self.slider = Slider((0, 0), pos, slider_size, level, background, line_img, circle_img, self.level_changed, self.inner_group)
-        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, 26, self.inner_group)
+        self.label = Label((self.slider.rect.width + 10, 0), self.get_percent(), False, 26, (255, 255, 255), (Config.screen_width, Config.screen_height), self.inner_group)
 
         self.rect = pygame.rect.Rect(pos, (self.slider.rect.width + self.label.rect.width + 10, self.slider.rect.height))
         self.image = pygame.Surface(self.rect.size, pygame.SRCALPHA, 32)
@@ -421,3 +423,68 @@ class Intro(pygame.sprite.Sprite):
                     self.video.stop()
         
         self.draw()
+
+class Input(pygame.sprite.Sprite):
+    def __init__(self, pos, size, placeholder, font_size, *groups):
+        super().__init__(*groups)
+
+        self.x, self.y = pos
+        self.w, self.h = size
+        self.x = self.x if self.x != "center" else (Config.screen_width-self.w)/2
+        self.y = self.y if self.y != "center" else (Config.screen_height-self.h)/2
+
+        self.placeholder = placeholder
+        self.font_size = font_size
+
+        self.inner_group = pygame.sprite.Group()
+        self.value = Label(("center", "center"), self.placeholder, True, self.font_size, (128, 128, 128), (self.w, self.h), self.inner_group)
+
+        self.hovered = False
+        self.focused = False
+
+        self.text = ""
+
+        self.rect = pygame.rect.Rect(self.x, self.y, self.w, self.h)
+        self.image = pygame.Surface(size, pygame.SRCALPHA, 32)
+
+    def draw(self):
+        if self.focused:
+            self.image.fill((128, 128, 128))
+        else:
+            self.image.fill((200, 200, 200))
+        bg_white = pygame.Surface((self.w - 4, self.h - 4))
+        bg_white.fill((255, 255, 255))
+        self.image.blit(bg_white, (2, 2))
+
+        self.inner_group.draw(self.image)
+
+    def update(self, *events):
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos) and not self.hovered:
+            self.hovered = True
+        elif not self.rect.collidepoint(mouse_pos) and self.hovered:
+            self.hovered = False
+
+        for event in events[0]:
+            if event.type == pygame.MOUSEBUTTONDOWN and self.hovered and not self.focused:
+                self.focused = True
+                self.value.color = (10, 10, 10)
+                self.value.text = self.text
+                self.value.isLocal = False
+                
+            elif event.type == pygame.MOUSEBUTTONDOWN and not self.hovered and self.focused:
+                self.focused = False
+                self.value.color = (100, 100, 100)
+                self.value.text = self.placeholder if self.text == "" else self.text
+                self.value.isLocal = True if self.value.text == self.placeholder else False
+
+            if event.type == pygame.KEYDOWN and self.focused:
+                if pygame.K_a <= event.key <= pygame.K_z or event.key == pygame.K_SPACE:
+                    self.text += chr(event.key)
+                    self.value.text = self.text
+                if event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:len(self.text)-1]
+                    self.value.text = self.text
+
+        self.draw()
+        self.inner_group.update(*events)

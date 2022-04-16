@@ -1,7 +1,7 @@
 import sys
 import pygame
 from Widgets import (Button, ButtonDesignParams, Intro, Label, Slider,
-                    SliderWithValue, Selector, SelectorDesignParams)
+                    SliderWithValue, Selector, SelectorDesignParams, Input)
 from Helper import Helper, h_click_snd
 import Config
 import Settings
@@ -127,6 +127,15 @@ class IntroFrame(Frame):
 class MenuFrame(NonGameFrame):
     def __init__(self):
         super().__init__()
+
+    def start(self):
+        self.helper.save_blink_timer()
+
+        if self.helper.is_speaking():
+            self.helper.humble()
+        self.helper.quit_threads()
+        
+        self.app.reload_frame(NicknameFrame())
     
     def goto_settings(self):
         self.helper.save_blink_timer()
@@ -155,12 +164,12 @@ class MenuFrame(NonGameFrame):
 
         self.buttons_group = pygame.sprite.Group()
 
-        Button(("center", -70 + 300), (250, 70), "новая_игра", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), None, self.buttons_group)
+        Button(("center", -70 + 300), (250, 70), "новая_игра", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.start, self.buttons_group)
         Button(("center", 10 + 300), (250, 70), "рекорды", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_scores, self.buttons_group)
         Button(("center", 90 + 300), (250, 70), "настройки", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_settings, self.buttons_group)
         Button(("center", 170 + 300), (250, 70), "выйти", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.exit, self.buttons_group)
 
-        Label(("center", 150), "рыба", True, 26, self.buttons_group)
+        Label(("center", 150), "рыба", True, 26, (255, 255, 255), (Config.screen_width, Config.screen_height), self.buttons_group)
 
         Selector((0, 0), (150, 120), Settings.lang_options, SelectorDesignParams(selector_pic_top, selector_pic_middle, selector_pic_bottom, btn_click_snd),self.change_localization, self.buttons_group)
 
@@ -226,11 +235,11 @@ class SettingsFrame(NonGameFrame):
 
         self.buttons_group = pygame.sprite.Group()
 
-        Label(("center", 40), "настройки", True, 36, self.buttons_group)
+        Label(("center", 40), "настройки", True, 36, (255, 255, 255), self.buttons_group)
 
-        Label((175, 120), "громкость_звуков", True, 22, self.buttons_group)
+        Label((175, 120), "громкость_звуков", True, 22, (255, 255, 255), (Config.screen_width, Config.screen_height), self.buttons_group)
         self.sound_volume_slider = SliderWithValue((380, 110), (255, 70), self.sound_volume, self.background, slider_line_img, slider_circle_img, self.update_sound_volume, self.buttons_group)
-        Label((175, 230), "громкость_музыки", True, 22, self.buttons_group)
+        Label((175, 230), "громкость_музыки", True, 22, (255, 255, 255), (Config.screen_width, Config.screen_height), self.buttons_group)
         self.music_volume_slider = SliderWithValue((380, 220), (255, 70), self.music_volume, self.background, slider_line_img, slider_circle_img, self.update_music_volume, self.buttons_group)
 
         Button(("center", 340), (300, 70), "сохранить_изменения", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd, 22), self.save_changes, self.buttons_group)
@@ -274,8 +283,8 @@ class ScoresFrame(NonGameFrame):
         max_len = 0
         for key in Settings.scores:
             if k == 0: max_len = len(str(Settings.scores[key]))
-            Label((100, 150+k*40), key, False, 26, self.scores_group)
-            Label((500, 150+k*40), " " *(max_len - len(str(Settings.scores[key]))) + str(Settings.scores[key]), False, 26, self.scores_group)
+            Label((100, 150+k*40), key, False, 26, (255, 255, 255), (Config.screen_width, Config.screen_height), self.scores_group)
+            Label((500, 150+k*40), " " * (max_len - len(str(Settings.scores[key]))) + str(Settings.scores[key]), False, 26, (255, 255, 255), (Config.screen_width, Config.screen_height), self.scores_group)
             k += 1
         
         Button(("center", 440), (300, 70), "ясно", ButtonDesignParams((0, 0, 0), btn_pic, btn_pic, btn_hover_snd, btn_click_snd, 26), self.goto_menu, self.scores_group)
@@ -288,3 +297,35 @@ class ScoresFrame(NonGameFrame):
 
     def update(self, events):
         super().update(events)
+
+class NicknameFrame(NonGameFrame):
+    def __init__(self):
+        super().__init__()
+
+    def goto_menu(self):
+        self.helper.save_blink_timer()
+
+        if self.helper.is_speaking():
+            self.helper.humble()
+        self.helper.quit_threads()
+
+        self.app.reload_frame(MenuFrame())
+
+    def post_init(self, app):
+        super().post_init(app)
+
+        self.nickname_group = pygame.sprite.Group()
+
+        Label(("center", 200), "введите_имя", True, 26, (255, 255, 255), (Config.screen_width, Config.screen_height), self.nickname_group)
+        Input(("center", 250), (400, 70), "имя...", 26, self.nickname_group)
+        Button(("center", 400), (250, 70), "поехали!", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), None, self.nickname_group)
+        Button((575, 525), (200, 50), "вернуться", ButtonDesignParams(self.background, btn_pic, btn_pic, btn_hover_snd, btn_click_snd), self.goto_menu, self.nickname_group)
+
+        Selector((0, 0), (150, 120), Settings.lang_options, SelectorDesignParams(selector_pic_top, selector_pic_middle, selector_pic_bottom, btn_click_snd),self.change_localization, self.nickname_group)
+
+        self.helper = Helper((0, Config.screen_height - 200), (200, 200), (0, 0, 0), self.nickname_group)
+
+        self.append_widget(self.nickname_group)
+
+    def update(self, *events):
+        super().update(*events)
